@@ -4,7 +4,7 @@ PhoneBook::PhoneBook() {}
 PhoneBook::~PhoneBook() {}
 
 
-int parsing_add_input(PhoneBook book, Contact contact[8], std::string input[5])
+int parsing_add_input(PhoneBook &book, Contact contact[8], std::string input[5])
 {
     for (size_t i = 0; i < 5; ++i)
     {
@@ -29,7 +29,7 @@ int parsing_add_input(PhoneBook book, Contact contact[8], std::string input[5])
     return (0);
 }
 
-void add_cmd(PhoneBook book, Contact contact[8])
+void add_cmd(PhoneBook &book, Contact contact[8])
 {
     std::string inputs[5];
     const std::string prompts[5] = {
@@ -47,18 +47,34 @@ void add_cmd(PhoneBook book, Contact contact[8])
     }
 
     parsing_add_input(book, contact, inputs);
+	//if (book.nb_contacts == 8)
+		//book.nb_contacts = 0;
     contact[book.nb_contacts++].setting_inputs(inputs);
+	std::cout << "add_cmd: " << book.nb_contacts << std::endl;
 }
 
-void search_cmd(PhoneBook book)
+void search_cmd(PhoneBook &book, Contact contact[8])
 {
     int i = 0;
+	std::string inputs[3];
 
-    std::cout << "INDEX     | FIRST_NAME | LAST_NAME | NICK_NAME " << std::endl;
-    
+    std::cout << "INDEX     |FIRST NAME|LAST NAME |NICKNAME  " << std::endl;
+	for (int i = 0; i < book.nb_contacts; i++)
+	{
+		contact[i].getting_inputs(inputs);
+		std::cout << std::setw(10) << std::right << i;
+		for (int j = 0; j < 3; j++)
+		{
+			std::string truncated = inputs[j];
+			if (truncated.length() > 10) 
+				truncated = truncated.substr(0, 9) + ".";
+			std::cout << "|" << std::setw(10) << std::right << truncated;
+		}
+		std::cout << std::endl;
+	}
 }
 
-int PhoneBook::parsing(PhoneBook book, Contact contact[8])
+int PhoneBook::parsing(PhoneBook &book, Contact contact[8])
 {
     if (book.command == "ADD")
     {
@@ -66,7 +82,7 @@ int PhoneBook::parsing(PhoneBook book, Contact contact[8])
     }
     else if (book.command == "SEARCH")
     {
-        search_cmd(book);
+        search_cmd(book, contact);
     }
     else if (book.command == "EXIT")
     {

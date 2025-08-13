@@ -54,3 +54,10 @@ void Contact::setting_inputs(std::string inputs[5])
     setDarkSecret(inputs[4]);
     std::cout << "Contact added" << std::endl;
 }
+
+void Contact::getting_inputs(std::string inputs[3])
+{
+    inputs[0] = getFirstName();
+    inputs[1] = getLastName();
+    inputs[2] = getNickName();
+}
