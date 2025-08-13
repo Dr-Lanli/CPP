@@ -29,7 +29,8 @@ public:
     void setPhoneNumber(std::string& phone_number);
     void setDarkSecret(std::string& dark_secret);
     void setting_inputs(std::string inputs[5]);
-	void getting_inputs(std::string inputs[3]);
+	void getting_name_inputs(std::string inputs[3]);
+	void getting_all_inputs(std::string inputs[5]);
 };
 
 

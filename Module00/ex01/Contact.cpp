@@ -55,9 +55,18 @@ void Contact::setting_inputs(std::string inputs[5])
     std::cout << "Contact added" << std::endl;
 }
 
-void Contact::getting_inputs(std::string inputs[3])
+void Contact::getting_name_inputs(std::string inputs[3])
 {
     inputs[0] = getFirstName();
     inputs[1] = getLastName();
     inputs[2] = getNickName();
+}
+
+void Contact::getting_all_inputs(std::string inputs[5])
+{
+    inputs[0] = getFirstName();
+    inputs[1] = getLastName();
+    inputs[2] = getNickName();
+	inputs[3] = getPhoneNumber();
+	inputs[4] = getDarkSecret();
 }
