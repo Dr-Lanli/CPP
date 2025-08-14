@@ -3,7 +3,7 @@
 PhoneBook::PhoneBook() {}
 PhoneBook::~PhoneBook() {}
 
-int parsing_add_input(PhoneBook &book, Contact contact[8], std::string input[5])
+int parsing_add_input(std::string input[5])
 {
 
     for (size_t i = 0; i < 5; ++i)
@@ -30,6 +30,7 @@ int parsing_add_input(PhoneBook &book, Contact contact[8], std::string input[5])
 void add_cmd(PhoneBook &book, Contact contact[8])
 {
     std::string inputs[5];
+
     const std::string prompts[5] = {
         "write a first name : ",
         "write a last name : ",
@@ -44,7 +45,7 @@ void add_cmd(PhoneBook &book, Contact contact[8])
         std::getline(std::cin, inputs[i]);
     }
 
-    if (parsing_add_input(book, contact, inputs) == 0)
+    if (parsing_add_input(inputs) == 0)
     {
         if (book.nb_contacts == 8)
             book.nb_contacts = 0;
@@ -53,7 +54,7 @@ void add_cmd(PhoneBook &book, Contact contact[8])
     }
 }
 
-void list_contacts(PhoneBook &book, Contact contact[8])
+void list_contacts(Contact contact[8])
 {
     std::string inputs[3];
 
@@ -95,7 +96,7 @@ void search_cmd_index(PhoneBook &book, Contact contact[8], int index)
     std::cout << "DarkSecret: " << inputs[4] << std::endl;
 }
 
-int search_index(PhoneBook &book, Contact contact[8])
+int search_index(PhoneBook &book)
 {
     int index = 0;
 
@@ -130,14 +131,14 @@ int PhoneBook::search_cmd(PhoneBook &book, Contact contact[8])
     std::string inputs[3];
     int index = 0;
 
-    list_contacts(book, contact);
+    list_contacts(contact);
     contact[0].getting_name_inputs(inputs);
     
     if (inputs[0] != "")
     {
         std::cout << "Enter a contact index:" << std::endl;
         std::getline(std::cin, book.command);
-        index = search_index(book, contact);
+        index = search_index(book);
         
         if (index != -1)
         {
