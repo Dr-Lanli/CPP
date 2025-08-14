@@ -84,7 +84,7 @@ void search_cmd_index(PhoneBook &book, Contact contact[8], int index)
     if (index >= book.nb_contacts || index < 0)
     {
         std::cout << "contact: " << index << " doesn't exist" << std::endl;
-        return ();
+        return ;
     }
     
     contact[index].getting_all_inputs(inputs);
@@ -98,32 +98,29 @@ void search_cmd_index(PhoneBook &book, Contact contact[8], int index)
 int search_index(PhoneBook &book, Contact contact[8])
 {
     int index = 0;
-    int flag = 0;
-    bool valid_input = true;
 
-            if (book.command.length() != 1)
-        {
-            std::cout << "SEARCH index is not coherent" << std::endl;
-            std::cout << "must be a digit between 0 to 7" << std::endl;
-            return (-1); 
-        }
+	if (book.command.length() != 1)
+	{
+		std::cout << "SEARCH index is not coherent" << std::endl;
+		std::cout << "must be a digit between 0 to 7" << std::endl;
+		return (-1); 
+	}
 
-            if (!std::isdigit(book.command[0]))
-        {
-            std::cout << "SEARCH index is not coherent" << std::endl;
-            std::cout << "must be a digit between 0 to 7" << std::endl;
-            return (-1);
-        }
+	if (!std::isdigit(book.command[0]))
+	{
+		std::cout << "SEARCH index is not coherent" << std::endl;
+		std::cout << "must be a digit between 0 to 7" << std::endl;
+		return (-1);
+    }
 
     index = book.command[0] - '0';
     
-
-            if (index < 0 || index > 7)
-        {
-            std::cout << "SEARCH index is not coherent" << std::endl;
-            std::cout << "must be a digit between 0 to 7" << std::endl;
-            return (-1);
-        }
+	if (index < 0 || index > 7)
+	{
+		std::cout << "SEARCH index is not coherent" << std::endl;
+		std::cout << "must be a digit between 0 to 7" << std::endl;
+		return (-1);
+	}
 
     return (index);
 }
