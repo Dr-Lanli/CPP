@@ -1,0 +1,59 @@
+➜  ex04 git:(main) ✗ make make make
+c++ -std=c++98 -Wall -Wextra -Werror   -c -o main.o main.cpp
+main.cpp: In function ‘int main(int, char**)’:
+main.cpp:3:27: error: unused parameter ‘argv’ [-Werror=unused-parameter]
+    3 | int main (int argc, char *argv[])
+      |                     ~~~~~~^~~~~~
+cc1plus: all warnings being treated as errors
+make: *** [<commande interne> : main.o] Erreur 1
+➜  ex04 git:(main) ✗ make re
+rm -f main.o
+rm -f Sed
+c++ -std=c++98 -Wall -Wextra -Werror   -c -o main.o main.cpp
+c++ -std=c++98 -Wall -Wextra -Werror main.o -o Sed
+➜  ex04 git:(main) ✗ ./Sed         
+please enter first a filename, and then s1, s2
+➜  ex04 git:(main) ✗ ./Sed e d f
+please enter first a filename, and then s1, s2
+➜  ex04 git:(main) ✗ ./Sed e d f f
+please enter first a filename, and then s1, s2
+➜  ex04 git:(main) ✗ make re      
+rm -f main.o
+rm -f Sed
+c++ -std=c++98 -Wall -Wextra -Werror   -c -o main.o main.cpp
+c++ -std=c++98 -Wall -Wextra -Werror main.o -o Sed
+➜  ex04 git:(main) ✗ ./Sed e d f  
+➜  ex04 git:(main) ✗ ./Sed e d f r
+please enter first a filename, and then s1, s2
+➜  ex04 git:(main) ✗ ./Sed e d    
+please enter first a filename, and then s1, s2
+➜  ex04 git:(main) ✗ make fclean
+rm -f main.o
+rm -f Sed
+➜  ex04 git:(main) ✗ touch file.cpp
+➜  ex04 git:(main) ✗ touch file.hpp
+➜  ex04 git:(main) ✗ touch test.txt
+➜  ex04 git:(main) ✗ make re
+rm -f main.o
+rm -f Sed
+c++ -std=c++98 -Wall -Wextra -Werror   -c -o main.o main.cpp
+c++ -std=c++98 -Wall -Wextra -Werror main.o -o Sed
+➜  ex04 git:(main) ✗ ./Sed test.txt tgtg gtgtg
+➜  ex04 git:(main) ✗ ./Sed test.tx tgtg gtgtg 
+➜  ex04 git:(main) ✗ make re
+rm -f main.o
+rm -f Sed
+c++ -std=c++98 -Wall -Wextra -Werror   -c -o main.o main.cpp
+main.cpp: In function ‘int check_inputs(int, char**)’:
+main.cpp:3:34: error: unused parameter ‘argv’ [-Werror=unused-parameter]
+    3 | int check_inputs(int argc, char *argv[])
+      |                            ~~~~~~^~~~~~
+cc1plus: all warnings being treated as errors
+make: *** [<commande interne> : main.o] Erreur 1
+➜  ex04 git:(main) ✗ make re
+rm -f main.o
+rm -f Sed
+c++ -std=c++98 -Wall -Wextra -Werror   -c -o main.o main.cpp
+c++ -std=c++98 -Wall -Wextra -Werror main.o -o Sed
+➜  ex04 git:(main) ✗ ./Sed test.tx tgtg gtgtg
+➜  ex04 git:(main) ✗ ./Sed test tgtg gtgtg 
