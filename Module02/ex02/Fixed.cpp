@@ -2,19 +2,16 @@
 
 Fixed::Fixed()
 {
-	std::cout << "Default constructor called" << std::endl;
 	_value = 0;
 }
 
 Fixed::Fixed(const int i)
 {
-	std::cout << "Int constructor called" << std::endl;
 	_value = i << _fract_bits;
 }
 
 Fixed::Fixed(const float f)
 {
-	std::cout << "Float constructor called" << std::endl;
 	_value = roundf(f * (1 << _fract_bits));
 }
 
@@ -54,22 +51,66 @@ bool Fixed::operator!=(const Fixed &other) const
 
 Fixed Fixed::operator+(const Fixed &other) const
 {
-	return Fixed(this->_value + other._value);
+	Fixed res;
+
+	res._value = this->_value + other._value;
+	return (res);
 }
 
 Fixed Fixed::operator-(const Fixed &other) const
 {
-	return Fixed(this->_value - other._value);
+	Fixed res;
+
+	res._value = this->_value - other._value;
+	return (res);
 }
 
 Fixed Fixed::operator*(const Fixed &other) const
 {
-	return Fixed(this->_value * other._value);
+	Fixed temp;
+	Fixed res;
+
+	temp._value = this->_value * other._value;
+	res._value = temp._value >> _fract_bits;
+	return (res);
 }
 
 Fixed Fixed::operator/(const Fixed &other) const
 {
-	return Fixed(this->_value / other._value);
+	Fixed res;
+
+	res._value = (this->_value << _fract_bits) / other._value;
+	return (res);
+}
+
+Fixed& Fixed::operator++()
+{
+	_value++;
+	return (*this);
+}
+
+Fixed Fixed::operator++(int)
+{
+	Fixed temp;
+
+	temp = *this;
+	_value++;
+	return (temp);
+}
+
+Fixed& Fixed::operator--()
+{
+	_value--;
+	return (*this);
+}
+
+Fixed Fixed::operator--(int)
+{
+	Fixed temp;
+	
+	temp = *this;
+	_value--;
+	return (temp);
 }
 
 int Fixed::toInt(void) const
