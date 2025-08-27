@@ -74,8 +74,15 @@ int copy_file(char *argv[])
 	std::string line;
 	std::string first_part;
 	std::string end_part;
-    while (getline(src, line)) 
+    while (std::getline(src, line)) 
 	{
+		/*size_t index = 0;
+		while ((index = line.find(old_str)) != std::string::npos)
+		{
+			line.erase(index, old_str.size());
+			line.insert(index, new_str);
+		}
+		dest << line << '\n';*/
 		size_t index = 0;
 		while((index = line.find(old_str)) != std::string::npos) 
 		{
