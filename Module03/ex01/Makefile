@@ -3,9 +3,9 @@ NAME = ScavTrap
 CXX = c++
 CXXFLAGS = -std=c++98 -Wall -Wextra -Werror
 
-SRCS = main.cpp ScavTrap.cpp
+SRCS = main.cpp ScavTrap.cpp ClapTrap.cpp 
 OBJS = $(SRCS:.cpp=.o)
-INCLUDES = ScavTrap.hpp
+INCLUDES = ScavTrap.hpp ClapTrap.hpp
 
 all: $(NAME)
  
