@@ -122,3 +122,13 @@ void ScavTrap::guardGate()
 {
 	std::cout << "ScavTrap is now in Gate keeper mode" << std::endl;
 }
+
+void ScavTrap::attack(const std::string& target)
+{
+	if (_energy_points > 0 && _hit_points > 0)
+	{
+		std::cout << "ScavTrap " << _name << " attacks " << target << ", causing " << _attack_damage << " points of damage." << std::endl;
+		_energy_points--;
+	}
+	
+}
