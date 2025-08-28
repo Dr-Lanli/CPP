@@ -1,12 +1,12 @@
-#ifndef CLAP_TRAP_HPP
-#define CLAP_TRAP_HPP
+#ifndef SCAV_TRAP_HPP
+#define SCAV_TRAP_HPP
 
 #include <iostream>
 #include <string>
 
 class ClapTrap
 {
-private:
+protected:
 	std::string _name;
 	unsigned int _hit_points;
 	unsigned int _energy_points;
@@ -22,6 +22,21 @@ public:
 	int getAttackDamage() const;
 	int getHitPoints() const;
 };
+
+class ScavTrap : public ClapTrap
+{
+private:
+
+public:
+	ScavTrap(std::string name);
+	~ScavTrap();
+	ScavTrap(const ScavTrap &other);
+	ScavTrap &operator=(const ScavTrap &other);
+	void guardGate();
+};
+
+
+
 
 
 
