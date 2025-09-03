@@ -1,6 +1,6 @@
 #include "harlFilter.hpp"
 
-int enum_setup(std::string level)
+static int enum_setup(std::string level)
 {
 	std::string new_str;
 	for (size_t i = 0; i < level.size(); i++)
