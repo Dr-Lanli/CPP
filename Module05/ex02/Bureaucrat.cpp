@@ -1,6 +1,7 @@
 #include "Bureaucrat.hpp"
 #include "AForm.hpp"
 
+
 Bureaucrat::Bureaucrat(std::string name, int grade)
 {
     _name = name;
@@ -59,9 +60,14 @@ void Bureaucrat::setGrade(const int &grade)
     _grade = grade;
 }
 
-void Bureaucrat::signForm(Form &f)
+void Bureaucrat::signForm(AForm &f)
 {
     f.beSigned(*this);
+}
+
+void Bureaucrat::executeForm(AForm const &form) const
+{
+    form.execute(*this);
 }
 
 const char* Bureaucrat::GradeTooHighException::what() const throw() 

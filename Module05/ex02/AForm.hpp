@@ -2,6 +2,9 @@
 #define FORM_HPP
 
 #include <iostream>
+#include <unistd.h>
+#include <stdlib.h>
+#include <fstream>
 
 class Bureaucrat;
 
@@ -27,6 +30,7 @@ public:
     void setIsSigned(bool isSigned);
 
     void beSigned(Bureaucrat &b);
+    virtual void execute(Bureaucrat const &executor) const = 0;
 
     class GradeTooLowException : public std::exception
     {
@@ -34,6 +38,11 @@ public:
     };
 
     class GradeTooHighException : public std::exception
+    {
+        const char *what() const throw();
+    };
+
+    class NotSignedException : public std::exception
     {
         const char *what() const throw();
     };
