@@ -4,6 +4,9 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <algorithm>
+#include <iomanip>
+#include <limits.h>
 
 class ScalarConverter
 {

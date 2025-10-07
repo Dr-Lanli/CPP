@@ -39,8 +39,6 @@ const char* ScalarConverter::UnknownTypeException::what() const throw()
     return ("Input Error, type undefined");
 }
 
-
-
 static bool isStrNumbers(const std::string& str)
 {
     size_t i = 0;
@@ -55,6 +53,22 @@ static bool isStrNumbers(const std::string& str)
     }
 
     return (i > 0);
+}
+
+static void printChar(char c)
+{
+    if (c > 31 && c < 127)
+    {
+        std::cout << "char: " << "'" << c << "'" << std::endl;
+    }
+    else if (c < 32)
+    {
+        std::cout << "char: non printable character" << std::endl;
+    }
+    else
+    {
+        std::cout << "char: non displayable character" << std::endl;
+    }
 }
 
 static bool strToFloat(const std::string &str, float &value) 
@@ -86,19 +100,29 @@ static int whichTypes(std::string &str)
 {
     if (str.size() == 1)
     {
-        int n = 0;
-        if (!strToInt(str, n))
-            throw ScalarConverter::IntConversionException();
-        if (isalpha(n))
+        //int n = 0;
+        //if (!strToInt(str, n))
+            //throw ScalarConverter::IntConversionException();
+        if (isalpha(str[0]))
             return (ScalarConverter::eChar);
     }
-    if (str.find('f') != std::string::npos || (str == "-inff" || str == "+inff" || str == "nanf"))
+    else if (str == "-inf" || str == "+inf" || str == "nan")
+    {
+        return (ScalarConverter::eDouble);
+    }
+    else if (str == "-inff" || str == "+inff" || str == "nanf")
     {
         return (ScalarConverter::eFloat);
     }
-    if ((str.find('.') != std::string::npos) || (str == "-inf" || str == "+inf" || str == "nan"))
+    else if ((str.find('.') != std::string::npos) && !(str.find('f') != std::string::npos))
     {
         return (ScalarConverter::eDouble);
+    }
+    //int fInString = std::count(str.begin(), str.end(), 'f');
+    else if ((str.find('f') != std::string::npos) && (str.find('.') != std::string::npos))
+    {
+        str.erase(str.size() - 1);
+        return (ScalarConverter::eFloat);
     }
     if (isStrNumbers(str))
     {
@@ -112,28 +136,40 @@ static int whichTypes(std::string &str)
     return (ScalarConverter::eUnknown);
 }
 
-static void print(std::string &str, char c, int i, float f, double d, bool flag)
+static void print(std::string &str, char c, int i, float f, double d, std::string &type)
 {
-    std::cout << "char: " << c << std::endl;
-    std::cout << "int: " << i << std::endl;
-    if (flag)
+    if (type == "double")
     {
-        std::cout << "float: " << str << std::endl;
+        std::cout << "int: impossible" << std::endl;
+        std::cout << "char: impossible" << std::endl;
+        std::cout << "float: " << str + "f" << std::endl;
         std::cout << "double: " << str << std::endl;
         return ;
     }
-    std::cout << "float: " << f << std::endl;
+    else if (type == "float")
+    {
+        std::cout << "int: impossible" << std::endl;
+        std::cout << "char: impossible" << std::endl;
+        std::cout << "float: " << str << std::endl;
+        str.erase(str.size() - 1);
+        std::cout << "double: " << str << std::endl;
+        return ;
+    }
+    printChar(c);
+    std::cout << "int: " << i << std::endl;
+    std::cout << std::fixed << std::setprecision(1);
+    std::cout << "float: " << f << "f" << std::endl;
     std::cout << "double: " << d << std::endl;
     
 }
 
 static void print(char c, int i, float f, double d)
 {
-    std::cout << "char: " << c << std::endl;
+    printChar(c);
     std::cout << "int: " << i << std::endl;
-    std::cout << "float: " << f << std::endl;
+    std::cout << std::fixed << std::setprecision(1);
+    std::cout << "float: " << f << "f" << std::endl;
     std::cout << "double: " << d << std::endl;
-    
 }
 
 static void fromCharTo(char c)
@@ -144,24 +180,14 @@ static void fromCharTo(char c)
     print(c, i, f, d);
 }
 
-static void fromDoubleTo(std::string &str, float f, bool flag)
+static void fromDoubleOrFloatTo(std::string &str, float f, std::string type)
 {
     int i = static_cast<int>(f);
     char c = static_cast<char>(f);
-    if (!flag)
-        double d = static_cast<double>(f);
     double d = 0;
-    print(str, c, i, f, d, flag);
-}
-
-static void fromFloatTo(std::string &str, float f, bool flag)
-{
-    int i = static_cast<int>(f);
-    char c = static_cast<char>(f);
-    if (!flag)
-        float d = static_cast<float>(f);
-    float d = 0;
-    print(str, c, i, f, d, flag);
+    if (type == "")
+        d = static_cast<double>(f);
+    print(str, c, i, f, d, type);
 }
 
 static void fromIntTo(int i)
@@ -194,10 +220,10 @@ void ScalarConverter::convert(std::string &str)
                 throw ScalarConverter::FloatConversionException();
             if (str == "-inff" || str == "+inff" || str == "nanf")
             {
-                fromFloatTo(str, f, true);
+                fromDoubleOrFloatTo(str, f, "float");
                 break;
             }
-            fromFloatTo(str, f, false);
+            fromDoubleOrFloatTo(str, f, "");
             break;
         }
         case ScalarConverter::eDouble:
@@ -207,10 +233,10 @@ void ScalarConverter::convert(std::string &str)
                 throw ScalarConverter::DoubleConversionException();
             if (str == "-inf" || str == "+inf" || str == "nan")
             {
-                fromDoubleTo(str, d, true);
+                fromDoubleOrFloatTo(str, d, "double");
                 break;
             }
-            fromDoubleTo(str, d, false);
+            fromDoubleOrFloatTo(str, d, "");
             break;
         }
         case ScalarConverter::eInt:
