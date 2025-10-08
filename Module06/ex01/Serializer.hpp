@@ -28,6 +28,11 @@ public:
         public:
         const char* what() const throw();
     };
+    class ReadingFileException : public std::exception 
+    {
+        public:
+        const char* what() const throw();
+    };
 
 };
 

@@ -23,7 +23,12 @@ Serializer &Serializer::operator=(const Serializer &other)
 
 const char* Serializer::CreatingFileException::what() const throw()
 {
-    return ("Error while creating the file");
+    return ("Error while creating file");
+}
+
+const char* Serializer::ReadingFileException::what() const throw()
+{
+    return ("Error while reading file");
 }
 
 uintptr_t Serializer::serialize(Data *ptr)
@@ -41,7 +46,7 @@ uintptr_t Serializer::serialize(Data *ptr)
     std::ifstream read("data.dat");
     if (!read) 
     {
-        throw Serializer::CreatingFileException();
+        throw Serializer::ReadingFileException();
     }
     Serializer::_sLine = new std::string();
     std::getline(read, *_sLine);
