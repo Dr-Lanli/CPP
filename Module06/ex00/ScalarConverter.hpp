@@ -6,16 +6,17 @@
 #include <sstream>
 #include <algorithm>
 #include <iomanip>
-#include <limits.h>
+#include <limits>
+#include <cmath>
 
 class ScalarConverter
 {
 private:
-public:
     ScalarConverter();
-    ~ScalarConverter();
     ScalarConverter(const ScalarConverter &other);
     ScalarConverter &operator=(const ScalarConverter &other);
+public:
+    ~ScalarConverter();
 
     static void convert(std::string &str);
 

@@ -100,9 +100,6 @@ static int whichTypes(std::string &str)
 {
     if (str.size() == 1)
     {
-        //int n = 0;
-        //if (!strToInt(str, n))
-            //throw ScalarConverter::IntConversionException();
         if (isalpha(str[0]))
             return (ScalarConverter::eChar);
     }
@@ -118,7 +115,6 @@ static int whichTypes(std::string &str)
     {
         return (ScalarConverter::eDouble);
     }
-    //int fInString = std::count(str.begin(), str.end(), 'f');
     else if ((str.find('f') != std::string::npos) && (str.find('.') != std::string::npos))
     {
         str.erase(str.size() - 1);
@@ -180,22 +176,51 @@ static void fromCharTo(char c)
     print(c, i, f, d);
 }
 
-static void fromDoubleOrFloatTo(std::string &str, float f, std::string type)
+static void fromDoubleOrFloatTo(std::string &str, double value, std::string type)
 {
-    int i = static_cast<int>(f);
-    char c = static_cast<char>(f);
-    double d = 0;
-    if (type == "")
-        d = static_cast<double>(f);
-    print(str, c, i, f, d, type);
+    if (std::isnan(value) || std::isinf(value))
+    {
+        print(str, 0, 0, static_cast<float>(value), value, type);
+        return ;
+    }
+
+    if (value < std::numeric_limits<int>::min() || value > std::numeric_limits<int>::max())
+        std::cout << "int: impossible" << std::endl;
+    else
+        std::cout << "int: " << static_cast<int>(value) << std::endl;
+
+    if (value < std::numeric_limits<char>::min() || value > std::numeric_limits<char>::max())
+        std::cout << "char: impossible" << std::endl;
+    else
+        printChar(static_cast<char>(value));
+
+    float f;
+    if (value < -std::numeric_limits<float>::max() || value > std::numeric_limits<float>::max())
+        std::cout << "float: impossible" << std::endl;
+    else
+    {
+        f = static_cast<float>(value);
+        std::cout << std::fixed << std::setprecision(1);
+        std::cout << "float: " << f << "f" << std::endl;
+    }
+
+    std::cout << "double: " << value << std::endl;
 }
 
 static void fromIntTo(int i)
 {
-    char c = static_cast<char>(i);
+    if (i < std::numeric_limits<char>::min() || i > std::numeric_limits<char>::max())
+        std::cout << "char: impossible" << std::endl;
+    else
+        printChar(static_cast<char>(i));
+    std::cout << "int: " << i << std::endl;
+
     float f = static_cast<float>(i);
     double d = static_cast<double>(i);
-    print(c, i, f, d);
+
+    std::cout << std::fixed << std::setprecision(1);
+    std::cout << "float: " << f << "f" << std::endl;
+    std::cout << "double: " << d << std::endl;
 }
 
 void ScalarConverter::convert(std::string &str)
@@ -220,10 +245,10 @@ void ScalarConverter::convert(std::string &str)
                 throw ScalarConverter::FloatConversionException();
             if (str == "-inff" || str == "+inff" || str == "nanf")
             {
-                fromDoubleOrFloatTo(str, f, "float");
+                fromDoubleOrFloatTo(str, static_cast<double>(f), "float");
                 break;
             }
-            fromDoubleOrFloatTo(str, f, "");
+            fromDoubleOrFloatTo(str, static_cast<double>(f), "");
             break;
         }
         case ScalarConverter::eDouble:
