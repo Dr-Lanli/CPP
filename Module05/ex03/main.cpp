@@ -1,5 +1,6 @@
 #include "Bureaucrat.hpp"
 #include "AForm.hpp"
+#include "Intern.hpp"
 #include "ShrubberyCreationForm.hpp"
 #include "PresidentialPardonForm.hpp"
 #include "RobotomyRequestForm.hpp"
@@ -76,6 +77,7 @@ int main()
             std::cerr << "Error expected (grade) : " << e.what() << std::endl;
         }
 
+        std::cout << "\n===== POLYMORPHISM =====" << std::endl;
         // 4. Test polymorphisme
         try 
         {
@@ -92,10 +94,43 @@ int main()
         {
             std::cerr << "Error unexpected : " << e.what() << std::endl;
         }
+
+        std::cout << "\n===== INTERN TEST =====" << std::endl;
+        // 5. Intern cree des forms
+        try 
+        {
+            Intern someRandomIntern;
+            AForm* rrf;
+            rrf = someRandomIntern.makeForm("shrubbery creation", "Bender");
+
+            if (rrf)
+                delete rrf;
+            else
+                std::cout << "Intern could not create this form.\n";
+        } 
+        catch (const std::exception &e) 
+        {
+            std::cerr << "Error unexpected : " << e.what() << std::endl;
+        }
+        
+        try 
+        {
+            Intern i;
+            AForm* form = i.makeForm("incorrect name", "Target");
+
+            if (!form)
+                std::cout << "Intern could not create this form.\n";
+            else
+                delete form;
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << "Unexpected exception: " << e.what() << std::endl;
+        }
     }
     catch(const std::exception& e)
     {
         std::cerr << "Critical error : " << e.what() << std::endl;
     }
-    return 0;
+    return (0);
 }
