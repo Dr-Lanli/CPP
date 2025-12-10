@@ -1,4 +1,5 @@
 #include "ScalarConverter.hpp"
+#include <cctype>
 
 ScalarConverter::ScalarConverter()
 {
@@ -41,41 +42,49 @@ const char* ScalarConverter::UnknownTypeException::what() const throw()
 
 static bool isStrNumbers(const std::string& str)
 {
+    if (str.empty())
+        return false;
     size_t i = 0;
-
-    if (!str.empty() && (str[0] == '+' || str[0] == '-'))
+    if (str[0] == '+' || str[0] == '-')
         i = 1;
-
+    bool hasDigit = false;
     for (; i < str.size(); ++i)
     {
         if (!std::isdigit(static_cast<unsigned char>(str[i])))
-            return (false);
+            return false;
+        hasDigit = true;
     }
-
-    return (i > 0);
+    return hasDigit;
 }
 
 static void printChar(char c)
 {
-    if (c > 31 && c < 127)
+    if (std::isprint(static_cast<unsigned char>(c)))
     {
         std::cout << "char: " << "'" << c << "'" << std::endl;
     }
-    else if (c < 32)
-    {
-        std::cout << "char: non printable character" << std::endl;
-    }
     else
     {
-        std::cout << "char: non displayable character" << std::endl;
+        std::cout << "char: Non displayable" << std::endl;
     }
 }
 
 static bool strToFloat(const std::string &str, float &value) 
 {
-    if (str == "-inff" || str == "+inff" || str == "nanf")
-        return (true);
-    std::stringstream ss(str);
+    if (str == "-inff" || str == "+inff")
+    {
+        value = (str[0] == '-') ? -std::numeric_limits<float>::infinity() : std::numeric_limits<float>::infinity();
+        return true;
+    }
+    if (str == "nanf")
+    {
+        value = std::numeric_limits<float>::quiet_NaN();
+        return true;
+    }
+    std::string tmp = str;
+    if (!tmp.empty() && tmp[tmp.size() - 1] == 'f')
+        tmp.erase(tmp.size() - 1);
+    std::stringstream ss(tmp);
     ss >> value;
     return (!ss.fail() && ss.eof());
 }
@@ -89,74 +98,54 @@ static bool strToInt(const std::string &str, int &value)
 
 static bool strToDouble(const std::string &str, double &value) 
 {
-    if (str == "-inf" || str == "+inf" || str == "nan")
-        return (true);
+    if (str == "-inf" || str == "+inf")
+    {
+        value = (str[0] == '-') ? -std::numeric_limits<double>::infinity() : std::numeric_limits<double>::infinity();
+        return true;
+    }
+    if (str == "nan")
+    {
+        value = std::numeric_limits<double>::quiet_NaN();
+        return true;
+    }
     std::stringstream ss(str);
     ss >> value;
     return (!ss.fail() && ss.eof());
 }
 
-static int whichTypes(std::string &str)
+static int whichTypes(const std::string &str)
 {
     if (str.size() == 1)
     {
-        if (isalpha(str[0]))
-            return (ScalarConverter::eChar);
+        if (!std::isdigit(static_cast<unsigned char>(str[0])))
+            return ScalarConverter::eChar;
+        // single digit -> treat as int
     }
-    else if (str == "-inf" || str == "+inf" || str == "nan")
+    if (str == "-inf" || str == "+inf" || str == "nan")
+        return ScalarConverter::eDouble;
+    if (str == "-inff" || str == "+inff" || str == "nanf")
+        return ScalarConverter::eFloat;
+
+    // float suffix: must be trailing 'f' and contain a dot in the rest
+    if (str.size() >= 2 && str[str.size() - 1] == 'f')
     {
-        return (ScalarConverter::eDouble);
+        std::string tmp = str.substr(0, str.size() - 1);
+        if (tmp.find('.') != std::string::npos)
+            return ScalarConverter::eFloat;
     }
-    else if (str == "-inff" || str == "+inff" || str == "nanf")
-    {
-        return (ScalarConverter::eFloat);
-    }
-    else if ((str.find('.') != std::string::npos) && !(str.find('f') != std::string::npos))
-    {
-        return (ScalarConverter::eDouble);
-    }
-    else if ((str.find('f') != std::string::npos) && (str.find('.') != std::string::npos))
-    {
-        str.erase(str.size() - 1);
-        return (ScalarConverter::eFloat);
-    }
+
+    // double: contains a dot and not a trailing f
+    if (str.find('.') != std::string::npos)
+        return ScalarConverter::eDouble;
+
     if (isStrNumbers(str))
     {
         int n = 0;
         if (!strToInt(str, n))
             throw ScalarConverter::IntConversionException();
-        
-        return (ScalarConverter::eInt);
+        return ScalarConverter::eInt;
     }
-    std::cout << "test:" << isStrNumbers(str) << std::endl;
-    return (ScalarConverter::eUnknown);
-}
-
-static void print(std::string &str, char c, int i, float f, double d, std::string &type)
-{
-    if (type == "double")
-    {
-        std::cout << "int: impossible" << std::endl;
-        std::cout << "char: impossible" << std::endl;
-        std::cout << "float: " << str + "f" << std::endl;
-        std::cout << "double: " << str << std::endl;
-        return ;
-    }
-    else if (type == "float")
-    {
-        std::cout << "int: impossible" << std::endl;
-        std::cout << "char: impossible" << std::endl;
-        std::cout << "float: " << str << std::endl;
-        str.erase(str.size() - 1);
-        std::cout << "double: " << str << std::endl;
-        return ;
-    }
-    printChar(c);
-    std::cout << "int: " << i << std::endl;
-    std::cout << std::fixed << std::setprecision(1);
-    std::cout << "float: " << f << "f" << std::endl;
-    std::cout << "double: " << d << std::endl;
-    
+    return ScalarConverter::eUnknown;
 }
 
 static void print(char c, int i, float f, double d)
@@ -176,12 +165,26 @@ static void fromCharTo(char c)
     print(c, i, f, d);
 }
 
-static void fromDoubleOrFloatTo(std::string &str, double value, std::string type)
+static void fromDoubleOrFloatTo(const std::string &str, double value, const std::string &type)
 {
     if (std::isnan(value) || std::isinf(value))
     {
-        print(str, 0, 0, static_cast<float>(value), value, type);
-        return ;
+        std::cout << "char: impossible" << std::endl;
+        std::cout << "int: impossible" << std::endl;
+        if (type == "double")
+        {
+            std::cout << "float: " << str << "f" << std::endl;
+            std::cout << "double: " << str << std::endl;
+        }
+        else if (type == "float")
+        {
+            std::cout << "float: " << str << std::endl;
+            std::string d = str;
+            if (!d.empty() && d[d.size() - 1] == 'f')
+                d.erase(d.size() - 1);
+            std::cout << "double: " << d << std::endl;
+        }
+        return;
     }
 
     if (value < std::numeric_limits<int>::min() || value > std::numeric_limits<int>::max())
@@ -194,12 +197,11 @@ static void fromDoubleOrFloatTo(std::string &str, double value, std::string type
     else
         printChar(static_cast<char>(value));
 
-    float f;
     if (value < -std::numeric_limits<float>::max() || value > std::numeric_limits<float>::max())
         std::cout << "float: impossible" << std::endl;
     else
     {
-        f = static_cast<float>(value);
+        float f = static_cast<float>(value);
         std::cout << std::fixed << std::setprecision(1);
         std::cout << "float: " << f << "f" << std::endl;
     }
@@ -223,7 +225,7 @@ static void fromIntTo(int i)
     std::cout << "double: " << d << std::endl;
 }
 
-void ScalarConverter::convert(std::string &str)
+void ScalarConverter::convert(const std::string &str)
 {
     if (str.empty())
         return ;

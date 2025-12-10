@@ -1,7 +1,7 @@
 NAME = serializer
 
 CXX = c++
-CXXFLAGS = -std=c++98 #-Wall -Wextra -Werror
+CXXFLAGS = -std=c++98 -Wall -Wextra -Werror
 
 SRCS = main.cpp Serializer.cpp
 OBJS = $(SRCS:.cpp=.o)

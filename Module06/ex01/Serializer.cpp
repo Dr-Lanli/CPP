@@ -1,6 +1,6 @@
 #include "Serializer.hpp"
 
-std::string *Serializer::_sLine = NULL;
+#include "Serializer.hpp"
 
 Serializer::Serializer()
 {
@@ -33,52 +33,10 @@ const char* Serializer::ReadingFileException::what() const throw()
 
 uintptr_t Serializer::serialize(Data *ptr)
 {
-    std::ofstream write("data.dat");
-
-    if (!write) 
-    {
-        throw Serializer::CreatingFileException();
-    }
-    write << "name: " << ptr->name << ", age: " << ptr->age << ", gender: " << ptr->gender << std::endl;
-
-    write.close();
-
-    std::ifstream read("data.dat");
-    if (!read) 
-    {
-        throw Serializer::ReadingFileException();
-    }
-    Serializer::_sLine = new std::string();
-    std::getline(read, *_sLine);
-    const char *str = _sLine->c_str();
-    uintptr_t raw = reinterpret_cast<uintptr_t>(str);
-    
-    // delete _sLine a l'extérieur de la fonction
-
-    return (raw);
+    return reinterpret_cast<uintptr_t>(ptr);
 }
 
-// format : [^,] prend tous les characters jusqu'à une virgule
-// sscanf() permet ici de parser et d'extraire correctement les données de str pour remplir la nouvelle struct
 Data* Serializer::deserialize(uintptr_t raw)
 {
-    const char* str = reinterpret_cast<const char*>(raw);
-    Data* data = new Data();
-    const char *format = "name: %[^,], age: %d, gender: %s";
-
-    std::sscanf(str, format, data->name, &data->age, data->gender);
-
-    delete Serializer::_sLine;
-    return (data);
+    return reinterpret_cast<Data*>(raw);
 }
-
-/*
-uintptr_t Serializer::serialize(Data *ptr)
-{
-    return (reinterpret_cast<uintptr_t>(ptr));
-}*/
-
-/*Data *Serializer::deserialize(uintptr_t raw)
-{
-    return (reinterpret_cast<Data*>(raw));
-}*/

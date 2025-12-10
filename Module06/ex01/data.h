@@ -7,7 +7,7 @@ struct Data
 {
     char name[20];
     int age;
-    char gender[1];
+    char gender[2];
 };
 
 #endif

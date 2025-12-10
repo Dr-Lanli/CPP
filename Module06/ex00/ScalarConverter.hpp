@@ -4,7 +4,6 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <algorithm>
 #include <iomanip>
 #include <limits>
 #include <cmath>
@@ -18,7 +17,7 @@ private:
 public:
     ~ScalarConverter();
 
-    static void convert(std::string &str);
+    static void convert(const std::string &str);
 
     enum eTypes{
         eChar,
