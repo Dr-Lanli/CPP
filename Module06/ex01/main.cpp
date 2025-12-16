@@ -19,7 +19,6 @@ int main (void)
         std::cout << recovered->age << std::endl;
         std::cout << recovered->gender << std::endl;
 
-        // If deserialize returned the same pointer, avoid double delete.
         if (recovered != ptr)
             delete recovered;
         delete ptr;

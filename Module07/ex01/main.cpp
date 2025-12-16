@@ -29,12 +29,12 @@ int main()
         ::iter(array, len, print<int>);
         std::cout << "\n";
 
-        ::iter(array, len, ::add<int>);
+        ::iter(array, len, ::increment<int>);
         std::cout << "After +1: ";
         ::iter(array, len, print<int>);
         std::cout << "\n";
 
-        ::iter(array, len, ::remove<int>);
+        ::iter(array, len, ::decrement<int>);
         std::cout << "After -1: ";
         ::iter(array, len, print<int>);
         std::cout << "\n\n";
@@ -55,7 +55,7 @@ int main()
         std::cout << "Before: ";
         ::iter(array, len, print<float>);
         std::cout << "\n";
-        ::iter(array, len, ::add<float>);
+        ::iter(array, len, ::increment<float>);
         std::cout << "After +1: ";
         ::iter(array, len, print<float>);
         std::cout << "\n\n";

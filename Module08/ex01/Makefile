@@ -1,11 +1,11 @@
-NAME = whatever
+NAME = Span
 
 CXX = c++
 CXXFLAGS = -std=c++98 -Wall -Wextra -Werror
 
-SRCS = main.cpp
+SRCS = main.cpp Span.cpp
 OBJS = $(SRCS:.cpp=.o)
-INCLUDES = whatever.hpp
+INCLUDES = Span.hpp
 
 all: $(NAME)
  

@@ -5,13 +5,13 @@
 
 
 template <typename T>
-void add(T &nbr)
+void increment(T &nbr)
 {
     nbr += 1;
 }
 
 template <typename T>
-void remove(T &nbr)
+void decrement(T &nbr)
 {
     nbr -= 1;
 }
@@ -39,7 +39,7 @@ void iter(T *array, const size_t len, Func f)
 }
 
 template <typename T, typename Func>
-void iter(const T* array, const size_t len, Func f)
+void iter(const T *array, const size_t len, Func f)
 {
     for (size_t i = 0; i < len; i++)
     {

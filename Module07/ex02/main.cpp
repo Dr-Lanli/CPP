@@ -20,8 +20,7 @@ int main(void)
         // Test copy constructor (deep copy)
         Array<int> copy = numbers;
         numbers[0] = 99;
-        std::cout << "After modification: numbers[0] = " << numbers[0]
-                  << ", copy[0] = " << copy[0] << '\n';
+        std::cout << "After modification: numbers[0] = " << numbers[0] << ", copy[0] = " << copy[0] << '\n';
 
         // Test assignment operator with strings
         Array<std::string> words(3);
@@ -29,6 +28,14 @@ int main(void)
         words[1] = "world";
         words[2] = "!";
 
+        
+        Array<std::string> assigned;
+        assigned = words;
+        std::cout << "assigned:";
+        for (size_t i = 0; i < assigned.size(); ++i)
+            std::cout << ' ' << assigned[i];
+        std::cout << '\n';
+        
         // Test assignment operator with strings (out of range)
         try 
         {
@@ -38,26 +45,19 @@ int main(void)
             std::cout << "caught exception: " << e.what() << '\n';
         }
 
-        Array<std::string> assigned;
-        assigned = words;
-        std::cout << "assigned:";
-        for (size_t i = 0; i < assigned.size(); ++i)
-            std::cout << ' ' << assigned[i];
-        std::cout << '\n';
-
         // Test const
         const Array<int> constNumbers = numbers;
-        std::cout << "constNumbers[2] = " << constNumbers[2] << '\n';
         std::cout << "constNumbers = ";
         for (size_t i = 0; i < constNumbers.size(); ++i)
             std::cout << ' ' << constNumbers[i];
         std::cout << '\n';
+        std::cout << "constNumbers[2] = " << constNumbers[2] << '\n';
 
         // Test default (empty) array size
         Array<double> empty;
         std::cout << "empty size = " << empty.size() << '\n';
         if (empty.size() == 0)
-            std::cout << "empty is empty, skipping access\n";
+            std::cout << "empty is empty, skipping access to empty[0]\n";
         else
             std::cout << "empty[0] = " << empty[0] << '\n';
 
