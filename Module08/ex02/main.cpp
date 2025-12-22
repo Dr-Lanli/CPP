@@ -3,35 +3,43 @@
 
 int main()
 {
-	MutantStack<int> mstack;
+    MutantStack<int> mstack;
 
-	mstack.push(5);
-	mstack.push(17);
+    mstack.push(5);
+    mstack.push(17);
+    std::cout << "top: " << mstack.top() << std::endl;
+    mstack.pop();
+    std::cout << "size: " << mstack.size() << std::endl;
 
-	std::cout << mstack.top() << std::endl;
+    mstack.push(3);
+    mstack.push(5);
+    mstack.push(737);
+    mstack.push(0);
 
-	mstack.pop();
+    std::cout << "right way: ";
+    for (MutantStack<int>::iterator it = mstack.begin(); it != mstack.end(); ++it)
+        std::cout << *it << " ";
+    std::cout << std::endl;
 
-	std::cout << mstack.size() << std::endl;
+    std::cout << "reverse way: ";
+    for (MutantStack<int>::reverse_iterator rit = mstack.rbegin(); rit != mstack.rend(); ++rit)
+        std::cout << *rit << " ";
+    std::cout << std::endl;
 
-	mstack.push(3);
-	mstack.push(5);
-	mstack.push(737);
-	mstack.push(0);
+    const MutantStack<int> cm(mstack);
+    std::cout << "const iter: ";
+    for (MutantStack<int>::const_iterator cit = cm.begin(); cit != cm.end(); ++cit)
+        std::cout << *cit << " ";
+    std::cout << std::endl;
 
-	MutantStack<int>::iterator it = mstack.begin();
-	MutantStack<int>::iterator ite = mstack.end();
-
-	++it;
-	--it;
-
-	while (it != ite)
+    std::stack<int> s(mstack);
+    std::cout << "popping from copy: ";
+    while (!s.empty()) 
 	{
-		std::cout << *it << std::endl;
-		++it;
-	}
-
-	std::stack<int> s(mstack);
+        std::cout << s.top() << " ";
+        s.pop();
+    }
+    std::cout << std::endl;
 
 	return (0);
 }

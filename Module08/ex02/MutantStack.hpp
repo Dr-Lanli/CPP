@@ -8,8 +8,13 @@ template <typename T, typename Container = std::deque<T> >
 class MutantStack : public std::stack<T, Container>
 {
 public:
+	// Alias base pour std::stack<T, Container>
     typedef std::stack<T, Container>                        base;
+
+	// Accès au conteneur interne deque<T>
     typedef typename base::container_type                   container_type;
+
+	// Définitions des itérateurs
     typedef typename container_type::iterator               iterator;
     typedef typename container_type::const_iterator         const_iterator;
     typedef typename container_type::reverse_iterator       reverse_iterator;
