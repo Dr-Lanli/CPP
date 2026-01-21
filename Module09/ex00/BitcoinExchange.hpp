@@ -7,11 +7,12 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cerrno>
+#include <utility>
 
 class BitcoinExchange
 {
     private:
-        std::map<std::string, int> _data;
+        std::map<std::string, int> _data_csv;
         static void trim(std::string &line);
         static bool parseDate(std::string &dateStr);
         static double parseValue(std::string &valueStr);
@@ -24,7 +25,10 @@ class BitcoinExchange
         BitcoinExchange &operator=(const BitcoinExchange &other);
         ~BitcoinExchange();
 
-        void parseLine(std::string &line);
+        std::pair<std::string, int> parseLine(std::string &line);
+        int extract_csv();
+        void calculateBtc(std::pair<std::string, int> data_input);
+        void print_data();
 
 };
 

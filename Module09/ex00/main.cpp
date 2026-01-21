@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 
+
 int main (int argc, char *argv[])
 {
     if (argc != 2)
@@ -17,14 +18,20 @@ int main (int argc, char *argv[])
         std::cout << "File doesn't exist" << std::endl;
         return (1);
     }
+    if (btc.extract_csv() == -1)
+        return (1);
     std::string line;
 
     while (getline (inputFile, line))
     {
-
-        btc.parseLine(line);
-        std::cout << line << std::endl;
+        std::pair<std::string, int> data_input;
+        data_input = btc.parseLine(line);
+        if (data_input.first.empty())
+            continue ;
+        btc.calculateBtc(data_input);
+        //std::cout << line << std::endl;
     }
+    //btc.print_data();
 
     return (0);
 }
