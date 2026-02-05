@@ -12,7 +12,7 @@
 class BitcoinExchange
 {
     private:
-        std::map<std::string, int> _data_csv;
+        std::map<std::string, double> _data_csv;
         static void trim(std::string &line);
         static bool parseDate(std::string &dateStr);
         static double parseValue(std::string &valueStr);
@@ -25,9 +25,9 @@ class BitcoinExchange
         BitcoinExchange &operator=(const BitcoinExchange &other);
         ~BitcoinExchange();
 
-        std::pair<std::string, int> parseLine(std::string &line);
+        std::pair<std::string, double> parseLine(std::string &line);
         int extract_csv();
-        void calculateBtc(std::pair<std::string, int> data_input);
+        void calculateBtc(std::pair<std::string, double> data_input);
         void print_data();
 
 };

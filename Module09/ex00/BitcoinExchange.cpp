@@ -1,6 +1,7 @@
 #include "BitcoinExchange.hpp"
 #include <fstream>
 #include <string>
+#include <iomanip>
 
 BitcoinExchange::BitcoinExchange()
 {
@@ -29,7 +30,7 @@ BitcoinExchange::~BitcoinExchange()
 
 void BitcoinExchange::print_data()
 {
-    for (std::map<std::string, int>::iterator it = _data_csv.begin(); it != _data_csv.end(); it++)
+    for (std::map<std::string, double>::iterator it = _data_csv.begin(); it != _data_csv.end(); it++)
     {
         std::cout << "{" << it->first << ", " << it->second << "}" << std::endl;
     }
@@ -147,7 +148,7 @@ double BitcoinExchange::parseValue(std::string &valueStr)
     return (dValue);
 }
 
-std::pair<std::string, int> BitcoinExchange::parseLine(std::string &line)
+std::pair<std::string, double> BitcoinExchange::parseLine(std::string &line)
 {
     trim(line);
     if (line.find("date|value") != std::string::npos)
@@ -194,24 +195,27 @@ int BitcoinExchange::extract_csv()
     return (0);
 }
 
-void BitcoinExchange::calculateBtc(std::pair<std::string, int> data_input)
+void BitcoinExchange::calculateBtc(std::pair<std::string, double> data_input)
 {
     //(void)data_input;
     std::string dateStr = data_input.first;
-    int value = data_input.second;
+    double value = data_input.second;
 
-    for (std::map<std::string, int>::iterator it = _data_csv.begin(); it != _data_csv.end(); it++)
+
+    std::cout << dateStr << std::endl;
+    for (std::map<std::string, double>::iterator it = _data_csv.begin(); it != _data_csv.end(); it++)
     {
         if (dateStr == it->first)
         {
             //std::cout << dateStr << " test " << it->first << std::endl;
-            int bitcoinRate = value * it->second;
-            std::cout << dateStr << " => " << value << " = " << bitcoinRate << std::endl;
+            double bitcoinRate = value * it->second;
+            std::cout << "IT SECOND: " << std::setprecision(15) << it->second << std::endl;
+            std::cout << dateStr << std::setprecision(15) << " => " << value << " = " << bitcoinRate << std::endl;
             break ;
         }
         else
         {
-            std::map<std::string, int>::iterator lower_date = _data_csv.lower_bound(dateStr);
+            std::map<std::string, double>::iterator lower_date = _data_csv.lower_bound(dateStr);
             if (lower_date == _data_csv.begin()) 
             {
                break ;
@@ -221,9 +225,10 @@ void BitcoinExchange::calculateBtc(std::pair<std::string, int> data_input)
                 if (lower_date == _data_csv.end() || lower_date->first != dateStr)
                     --lower_date;
             }
-            int bitcoinRate = lower_date->second * value;
-            std::cout << lower_date->second << " test " << value << std::endl;
-            std::cout << lower_date->first << " => " << value << " = " << bitcoinRate << std::endl;
+            double bitcoinRate = lower_date->second * value;
+            std::cout << "IT SECOND: " << lower_date->second << std::endl;
+            //std::cout << lower_date->second << " test " << value << std::endl;
+            std::cout << std::setprecision(15) << lower_date->first << " => " << value << " = "  << bitcoinRate << std::endl;
             break ;
         }
         

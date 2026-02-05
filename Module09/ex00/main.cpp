@@ -24,10 +24,13 @@ int main (int argc, char *argv[])
 
     while (getline (inputFile, line))
     {
-        std::pair<std::string, int> data_input;
+        std::pair<std::string, double> data_input;
         data_input = btc.parseLine(line);
-        if (data_input.first.empty())
+        if (data_input.first.empty() || data_input.second == -1)
+        {
+            //std::cout << "TEST" << std::endl;
             continue ;
+        }
         btc.calculateBtc(data_input);
         //std::cout << line << std::endl;
     }
