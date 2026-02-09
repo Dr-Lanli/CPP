@@ -28,13 +28,10 @@ int main (int argc, char *argv[])
         data_input = btc.parseLine(line);
         if (data_input.first.empty() || data_input.second == -1)
         {
-            //std::cout << "TEST" << std::endl;
             continue ;
         }
         btc.calculateBtc(data_input);
-        //std::cout << line << std::endl;
     }
-    //btc.print_data();
 
     return (0);
 }

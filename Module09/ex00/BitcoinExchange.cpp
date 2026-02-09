@@ -57,10 +57,8 @@ bool BitcoinExchange::longConverter(std::string &str, long &value)
     value = std::strtol(str.c_str(), &end, 10);
 
     if (errno != 0 || *end != '\0')
-    {
-        //std::cout << "Error: Bad input => " << str << std::endl;
+
         return (false);
-    }
 
     return (true);
 }
@@ -93,7 +91,6 @@ bool BitcoinExchange::parseDate(std::string &dateStr)
 
     struct tm datetime;
 
-    //std::cout << yearLong << " " << monthLong << " " << dayLong << std::endl;
     datetime.tm_year = static_cast<int>(yearLong) - 1900; // Number of years since 1900
     datetime.tm_mon = static_cast<int>(monthLong) - 1; // Number of months since January
     datetime.tm_mday = static_cast<int>(dayLong);
@@ -152,18 +149,18 @@ std::pair<std::string, double> BitcoinExchange::parseLine(std::string &line)
 {
     trim(line);
     if (line.find("date|value") != std::string::npos)
-        return (std::pair<std::string, int> ());
+        return (std::pair<std::string, double> ());
     size_t midLine = line.find("|");
     if (midLine == std::string::npos)
     {
         std::cout << "Error: Bad input => " << line << std::endl;
-        return (std::pair<std::string, int> ());
+        return (std::pair<std::string, double> ());
     }
     std::string dateStr  = line.substr(0, midLine);
     std::string valueStr = line.substr(midLine + 1);
 
-    double doubleValue = parseValue(valueStr);
     parseDate(dateStr);
+    double doubleValue = parseValue(valueStr);
     
     return (make_pair(dateStr, doubleValue));
 }
@@ -188,8 +185,7 @@ int BitcoinExchange::extract_csv()
         std::string valueStr = line.substr(midLine + 1);
         char *end;
         double dValue = std::strtod(valueStr.c_str(), &end);
-        _data_csv[dateStr] = static_cast<int>(dValue);
-        //std::cout << line << std::endl;
+        _data_csv[dateStr] = dValue;
     }
     
     return (0);
@@ -197,41 +193,23 @@ int BitcoinExchange::extract_csv()
 
 void BitcoinExchange::calculateBtc(std::pair<std::string, double> data_input)
 {
-    //(void)data_input;
     std::string dateStr = data_input.first;
     double value = data_input.second;
+    std::map<std::string, double>::iterator it = _data_csv.lower_bound(dateStr);
 
-
-    std::cout << dateStr << std::endl;
-    for (std::map<std::string, double>::iterator it = _data_csv.begin(); it != _data_csv.end(); it++)
+    if (it != _data_csv.end() && it->first == dateStr)
     {
-        if (dateStr == it->first)
-        {
-            //std::cout << dateStr << " test " << it->first << std::endl;
-            double bitcoinRate = value * it->second;
-            std::cout << "IT SECOND: " << std::setprecision(15) << it->second << std::endl;
-            std::cout << dateStr << std::setprecision(15) << " => " << value << " = " << bitcoinRate << std::endl;
-            break ;
-        }
-        else
-        {
-            std::map<std::string, double>::iterator lower_date = _data_csv.lower_bound(dateStr);
-            if (lower_date == _data_csv.begin()) 
-            {
-               break ;
-            } 
-            else 
-            {
-                if (lower_date == _data_csv.end() || lower_date->first != dateStr)
-                    --lower_date;
-            }
-            double bitcoinRate = lower_date->second * value;
-            std::cout << "IT SECOND: " << lower_date->second << std::endl;
-            //std::cout << lower_date->second << " test " << value << std::endl;
-            std::cout << std::setprecision(15) << lower_date->first << " => " << value << " = "  << bitcoinRate << std::endl;
-            break ;
-        }
-        
+        std::cout << std::fixed << std::setprecision(2) << dateStr << " => " << value << " = " << (value * it->second) << std::endl;
+        return ;
     }
+
+    if (it == _data_csv.begin())
+    {
+        std::cout << "Error: no earlier date available => " << dateStr << std::endl;
+        return ;
+    }
+
+    --it;
+    std::cout << std::fixed << std::setprecision(2) << dateStr << " => " << value << " = " << (value * it->second) << std::endl;
     
 }
