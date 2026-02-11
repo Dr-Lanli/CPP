@@ -8,12 +8,14 @@ int main(int argc, char *argv[])
         return (1);
     }
 
-	std::string rpnStr = argv[1];
-	RPN rpn;
+	RPN rpn(argv[1]);
 
-	rpn.parseRpn(rpnStr);
+	std::cout << "TEST before parsing: " << rpn.get_rpnStr() << std::endl;
+	if (!rpn.parseRpn())
+		return (1);
+	std::cout << "TEST after parsing: " << rpn.get_rpnStr() << std::endl;
 	rpn.executeRpn();
-
+	rpn.read_stack();
 
 	return (0);
 }
