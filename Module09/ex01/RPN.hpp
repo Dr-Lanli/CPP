@@ -3,12 +3,14 @@
 
 #include <iostream>
 #include <stack>
+#include <string>
 
 class RPN
 {
     private:
 		std::stack<int> _stack;
 		std::string _rpnStr;
+		int _res;
 
     public:
         RPN();
@@ -18,7 +20,8 @@ class RPN
         ~RPN();
 
 		bool parseRpn();
-		void executeRpn();
+		bool executeRpn();
+		bool switchOnSign(char sign, int a, int b);
 		void read_stack();
 
 		std::string get_rpnStr();

@@ -2,17 +2,20 @@
 
 RPN::RPN()
 {
-
+	_res = 0;
 }
 
 RPN::RPN(std::string rpnStr)
 {
 	_rpnStr = rpnStr;
+	_res = 0;
 }
 
 RPN::RPN(const RPN &other)
 {
     _stack = other._stack;
+	_rpnStr = other._rpnStr;
+	_res = other._res;
 }
 
 RPN &RPN::operator=(const RPN &other)
@@ -20,6 +23,8 @@ RPN &RPN::operator=(const RPN &other)
     if (this->_stack != other._stack)
     {
         _stack = other._stack;
+		_rpnStr = other._rpnStr;
+		_res = other._res;
     }
 
     return (*this);
@@ -52,11 +57,19 @@ static bool isSign(char c)
 	return (false);
 }
 
+static bool isValidNbr(char c)
+{
+	if (c >= 48 && c <= 57)
+		return (true);
+
+	return (false);
+}
+
 static bool isValidChar(char c)
 {
 	if (isSign(c))
 		return (true);
-	if (c >= 48 && c <= 57)
+	if (isValidNbr(c))
 		return (true);
 
 	return (false);
@@ -70,7 +83,7 @@ static std::string trimRpn(std::string &str)
 	{
 		str.erase(pos, 1);
 	}
-	std::cout << "TEST TRIM: " << str << std::endl;
+	//std::cout << "TEST TRIM: " << str << std::endl;
 	return (str);
 }
 
@@ -80,7 +93,7 @@ static bool validatingChar(std::string &str)
 	{
 		if (!isValidChar(str[i]))
 		{
-			std::cout << "TEST validatingStr: " << str[i] << std::endl;
+			//std::cout << "TEST validatingStr: " << str[i] << std::endl;
 			return (false);
 		}
 	}
@@ -110,11 +123,29 @@ static bool validatingSign(std::string &str)
 	return (true);
 }
 
+static bool validatingNbr(std::string str)
+{
+    for (size_t i = 0; i < str.size(); i++)
+    {
+        if (isValidChar(str[i]))
+        {
+            if (i + 1 < str.size() && isValidChar(str[i + 1]))
+                return (false);
+        }
+    }
+    return (true);
+}
+
 bool RPN::parseRpn()
 {
 	if (_rpnStr.empty())
 	{
 		std::cout << "Error: RPN is empty" << std::endl;
+		return (false);
+	}
+	if (!validatingNbr(_rpnStr))
+	{
+		std::cout << "Error: RPN contains numbers exceeding 9: " << _rpnStr << std::endl;
 		return (false);
 	}
 	trimRpn(_rpnStr);
@@ -129,17 +160,44 @@ bool RPN::parseRpn()
 		return (false);
 	}
 	
-	
 	return (true);
 }
-// TODO: limiter a max '9' tout element > n'est pas correct
-void RPN::executeRpn()
+
+bool RPN::switchOnSign(char sign, int a, int b)
+{
+	switch (sign)
+	{
+	case '-':
+		_res = a - b;
+		return (true);
+	case '+':
+		_res = a + b;
+		return (true);
+	case '*':
+		_res = a * b;
+		return (true);
+	case '/':
+		if (b == 0)
+		{
+			std::cout << "Error: division by 0: " << a << " / " << b << std::endl;
+			return (false);
+		}
+		_res = a / b;
+		return (true);
+	default:
+		return (true);
+	}
+
+	return (true);
+}
+
+bool RPN::executeRpn()
 {
 	for (size_t i = 0; i < _rpnStr.size(); i++)
 	{
 		for ( ; !isSign(_rpnStr[i]); i++)
 		{
-			std::cout << "stack to push: " << _rpnStr[i] << std::endl;
+			//std::cout << "stack to push: " << _rpnStr[i] << std::endl;
 			// Push les valeur en int au lieu d'ASCII par défaut
 			_stack.push(_rpnStr[i] - '0');
 		}
@@ -147,35 +205,21 @@ void RPN::executeRpn()
 		{
 			int a = 0;
 			int b = 0;
-			int res = 0;
 			
 			b = _stack.top();
-			std::cout << "stack elmt a: " << b << std::endl;
+			//std::cout << "stack elmt b: " << b << std::endl;
 			_stack.pop();
 			a = _stack.top();
-			std::cout << "stack elmt b: " << a << std::endl;
+			//std::cout << "stack elmt a: " << a << std::endl;
 			_stack.pop();
 	
-			switch (_rpnStr[i])
-			{
-			case '-':
-				res = a - b;
-				break;
-			case '+':
-				res = a + b;
-				break;
-			case '*':
-				res = a * b;
-				break;
-			case '/':
-				res = a / b;
-				break;
-			default:
-				break;
-			}
+			if (!switchOnSign(_rpnStr[i], a, b))
+				return (false);
 
-			std::cout << "stack res: " << res << std::endl;
-			_stack.push(res);
+			_stack.push(_res);
 		}
 	}
+	std::cout << _res << std::endl;
+	
+	return (true);
 }

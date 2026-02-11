@@ -10,12 +10,12 @@ int main(int argc, char *argv[])
 
 	RPN rpn(argv[1]);
 
-	std::cout << "TEST before parsing: " << rpn.get_rpnStr() << std::endl;
+	//std::cout << "TEST before parsing: " << rpn.get_rpnStr() << std::endl;
 	if (!rpn.parseRpn())
 		return (1);
-	std::cout << "TEST after parsing: " << rpn.get_rpnStr() << std::endl;
-	rpn.executeRpn();
-	rpn.read_stack();
+	//std::cout << "TEST after parsing: " << rpn.get_rpnStr() << std::endl;
+	if (!rpn.executeRpn())
+		return (1);
 
 	return (0);
 }
