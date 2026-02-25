@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     PmergeMe pme;
     std::string nbrStr;
 
-    if (argc < 2)
+    if (argc < 3)
     {
         std::cout << "Error: Not enough arguments" << std::endl;
         return (1);
@@ -36,6 +36,9 @@ int main(int argc, char *argv[])
         return (1);
     if (!pme.postParsing())
         return (1);
-        
+    
+	pme.sortingInserting();
+	//pme.printStack();
+
     return (0);
 }
