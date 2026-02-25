@@ -2,7 +2,7 @@
 #include <string>
 #include <sstream>
 
-PmergeMe::PmergeMe() : _odd(0), _hasOdd(false)
+PmergeMe::PmergeMe()// : _odd(0), _hasOdd(false)
 {
 
 }
@@ -114,11 +114,12 @@ std::vector<size_t> PmergeMe::jacobsthalOrder(size_t n)
 
 void PmergeMe::fordJohnson(std::vector<int> &array)
 {
-	bool hasOdd = false;
+    std::vector<int> processingStack;
+    std::vector<int> pendingStack;
+    std::vector<Pair> pairs;
+    int odd;
+    bool hasOdd = false;
 
-    _pairs.clear();
-    _processingStack.clear();
-    _pendingStack.clear();  
 	if (array.size() <= 1)
 		return ;
 
@@ -138,58 +139,62 @@ void PmergeMe::fordJohnson(std::vector<int> &array)
 			p.max = array[i];
 		}
 
-		_pairs.push_back(p);
+		algo.pairs.push_back(p);
 	}
 
 	// si array impair stocker l'impair
 	if (array.size() % 2 != 0)
 	{
-		_odd = array.back();
-		_hasOdd = true;
+		odd = array.back();
+		hasOdd = true;
 	}
 
-	for (size_t i = 0; i < _pairs.size(); i++)
+	for (size_t i = 0; i < pairs.size(); i++)
 	{
-		_processingStack.push_back(_pairs[i].max);
-		_pendingStack.push_back(_pairs[i].min);
+		processingStack.push_back(pairs[i].max);
+		pendingStack.push_back(pairs[i].min);
 	}
 
-	fordJohnson(_processingStack);
+	fordJohnson(processingStack);
+    
+	printStack(processingStack);
+	jacobsthalInserting();
 
 }
 
-void PmergeMe::jacobsthalInserting(std::vector<size_t> &jacobOrder)
+void PmergeMe::jacobsthalInserting()
 {
+    std::vector<size_t> jacobOrder;
+
+    jacobOrder = jacobsthalOrder(_stack.size());
+
 	for (size_t i = 0; i < jacobOrder.size(); i++)
 	{
-		int currentValue = _pendingStack[i];
+		int currentValue = pendingStack[i];
 		// retrouver la position du max associé
-		int maxValue = _pairs[i].max;
-		std::vector<int>::iterator maxPos = std::find(_processingStack.begin(), _processingStack.end(), maxValue);
-		std::vector<int>::iterator insertPos = std::lower_bound(_processingStack.begin(), maxPos, currentValue);
+		int maxValue = pairs[i].max;
+		std::vector<int>::iterator maxPos = std::find(processingStack.begin(), processingStack.end(), maxValue);
+		std::vector<int>::iterator insertPos = std::lower_bound(processingStack.begin(), maxPos, currentValue);
 
-		_processingStack.insert(insertPos, currentValue);
+		processingStack.insert(insertPos, currentValue);
 	}
 
-	if (_hasOdd)
+	if (hasOdd)
 	{
-		std::vector<int>::iterator minPos = std::lower_bound(_processingStack.begin(), _processingStack.end(), _odd);
-		_processingStack.insert(minPos, _odd);
+		std::vector<int>::iterator minPos = std::lower_bound(processingStack.begin(), processingStack.end(), odd);
+		processingStack.insert(minPos, odd);
 	}
 
-	_stack = _processingStack;
+	_stack = processingStack;
 }
 
-// TODO: passer les variables partagé dans la classe en local, possible struct local ? evite la corruption ?
+//TODO: passer les variables partagé dans la classe en local
+//TODO: mieux gérer les duplicates dans le parsing
+//TODO: remplacer find() par un binary search
 
 void PmergeMe::sortingInserting()
 {
-	std::vector<size_t> jacobOrder;
 	fordJohnson(_stack);
-	jacobOrder = jacobsthalOrder(_stack.size());
-	printStack(_processingStack);
-	jacobsthalInserting(jacobOrder);
 	std::cout << "\n";
 	printStack(_stack);
-
 }
