@@ -34,11 +34,11 @@ int main(int argc, char *argv[])
     nbrStr = ToString(argv);
     if (!pme.parsing(nbrStr))
         return (1);
-    if (!pme.postParsing())
-        return (1);
+    //if (!pme.postParsing())
+        //return (1);
     
 	pme.sortingInserting();
-	//pme.printStack();
+	pme.printStack();
 
     return (0);
 }

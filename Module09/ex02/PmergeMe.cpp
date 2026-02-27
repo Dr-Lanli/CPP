@@ -96,9 +96,9 @@ std::vector<size_t> PmergeMe::jacobsthalOrder(size_t n)
     jacob.push_back(1);
 
     while (jacob.back() < n)
-        jacob.push_back(jacob[jacob.size()-1] + 2 * jacob[jacob.size()-2]);
+        jacob.push_back(jacob[jacob.size() - 1] + 2 * jacob[jacob.size() - 2]);
 
-    size_t prev = 1;
+    size_t prev = 0;
 
     for (size_t k = 2; k < jacob.size(); k++)
     {
@@ -109,19 +109,28 @@ std::vector<size_t> PmergeMe::jacobsthalOrder(size_t n)
         prev = curr;
     }
 
+    // if any indices were skipped (happens when n is small) append them
+    // in increasing order so they will be inserted eventually.
+    for (size_t i = 0; i < n; i++)
+    {
+        if (std::find(order.begin(), order.end(), i) == order.end())
+            order.push_back(i);
+    }
+
     return (order);
 }
 
-void PmergeMe::fordJohnson(std::vector<int> &array)
+std::vector<int> PmergeMe::fordJohnson(std::vector<int> &array)
 {
     std::vector<int> processingStack;
     std::vector<int> pendingStack;
+    std::vector<int> maxIndexes;
     std::vector<Pair> pairs;
     int odd;
     bool hasOdd = false;
 
 	if (array.size() <= 1)
-		return ;
+		return (array);
 
 	// insertion des pairs de manière trié
 	for (size_t i = 0; i + 1 < array.size(); i += 2)
@@ -139,7 +148,7 @@ void PmergeMe::fordJohnson(std::vector<int> &array)
 			p.max = array[i];
 		}
 
-		algo.pairs.push_back(p);
+		pairs.push_back(p);
 	}
 
 	// si array impair stocker l'impair
@@ -155,25 +164,30 @@ void PmergeMe::fordJohnson(std::vector<int> &array)
 		pendingStack.push_back(pairs[i].min);
 	}
 
-	fordJohnson(processingStack);
-    
-	printStack(processingStack);
-	jacobsthalInserting();
+	processingStack = fordJohnson(processingStack);
+	jacobsthalInserting(processingStack, pendingStack, pairs, maxIndexes, odd, hasOdd);
 
+    return (processingStack);
 }
 
-void PmergeMe::jacobsthalInserting()
+void PmergeMe::jacobsthalInserting(std::vector<int> &processingStack, std::vector<int> &pendingStack, std::vector<Pair> &pairs, std::vector<int> maxIndexes, int odd, bool hasOdd)
 {
     std::vector<size_t> jacobOrder;
 
-    jacobOrder = jacobsthalOrder(_stack.size());
+    jacobOrder = jacobsthalOrder(pendingStack.size());
 
-	for (size_t i = 0; i < jacobOrder.size(); i++)
+	for (size_t k = 0; k < jacobOrder.size(); k++)
 	{
+        size_t i = jacobOrder[k];
+        if (i >= pendingStack.size() || i >= pairs.size())
+            continue ;
 		int currentValue = pendingStack[i];
+
 		// retrouver la position du max associé
 		int maxValue = pairs[i].max;
-		std::vector<int>::iterator maxPos = std::find(processingStack.begin(), processingStack.end(), maxValue);
+		//std::vector<int>::iterator maxPos = std::find(processingStack.begin(), processingStack.end(), maxValue);
+        //std::vector<int>::iterator maxPos = maxIndexes.begin() + maxIndexes[i];
+        std::vector<int>::iterator maxPos = std::lower_bound(processingStack.begin(), processingStack.end(), pairs[i].max);
 		std::vector<int>::iterator insertPos = std::lower_bound(processingStack.begin(), maxPos, currentValue);
 
 		processingStack.insert(insertPos, currentValue);
@@ -185,16 +199,12 @@ void PmergeMe::jacobsthalInserting()
 		processingStack.insert(minPos, odd);
 	}
 
-	_stack = processingStack;
 }
 
-//TODO: passer les variables partagé dans la classe en local
-//TODO: mieux gérer les duplicates dans le parsing
-//TODO: remplacer find() par un binary search
+//TODO: remplacer find() par un binary search et adapter le code en fonction
 
 void PmergeMe::sortingInserting()
 {
-	fordJohnson(_stack);
-	std::cout << "\n";
-	printStack(_stack);
+	std::vector<int> result = fordJohnson(_stack);
+	_stack = result;
 }
