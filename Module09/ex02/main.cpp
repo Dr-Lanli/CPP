@@ -1,5 +1,7 @@
 #include "PmergeMe.hpp"
 
+#include <ctime>
+
 std::string ToString(char *argv[])
 {
     int len = 0;
@@ -24,6 +26,8 @@ int main(int argc, char *argv[])
 {
     PmergeMe pme;
     std::string nbrStr;
+	clock_t t_start = clock();
+
 
     if (argc < 3)
     {
@@ -39,6 +43,10 @@ int main(int argc, char *argv[])
     
 	pme.sortingInserting();
 	pme.printStack();
+	pme.checkStack();
 
+	clock_t t_end = clock();
+	double elapsed = static_cast<double>(t_end - t_start) / CLOCKS_PER_SEC;
+	std::cout << "Clock time passed: " << elapsed << std::endl;
     return (0);
 }

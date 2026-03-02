@@ -36,11 +36,28 @@ void PmergeMe::printStack(std::vector<int> &stack)
     
 }
 
+void PmergeMe::checkStack()
+{
+	for (size_t i = 0; i < _stack.size() - 1; i++)
+	{
+		if (_stack[i] > _stack[i + 1])
+		{
+			std::cout << "Stack unsorted: \n" << "_stack[i]: " << _stack[i] << "\n" << "_stack[i + 1]: " << _stack[i + 1] << std::endl;
+			
+			return ;
+		}
+	}
+	std::cout << "Stack sorted" << std::endl;
+}
+
 void PmergeMe::printStack()
 {
+	std::cout << "After: ";
     for (size_t i = 0; i < _stack.size(); i++)
     {
-        std::cout << "stack" << "[" << i << "] :" << _stack[i] << std::endl; 
+        std::cout << _stack[i] << " ";
+		if (i == _stack.size() - 1)
+			std::cout << std::endl;
     }
     
 }
@@ -64,57 +81,83 @@ bool PmergeMe::postParsing()
 
 bool PmergeMe::parsing(std::string &nbrStr)
 {
-    for (size_t i = 0; i < nbrStr.size(); i++)
+    size_t i = 0;
+	bool endOfString = false;
+
+    while (i < nbrStr.size())
     {
         std::string subStr;
         int currentNbr = 0;
-        size_t nextSpace = nbrStr.find(' ');
+		// Recherche l'espace à partir de la position actuelle 'i'
+        size_t nextSpace = nbrStr.find(' ', i);
 
-        subStr = nbrStr.substr(i, nextSpace);
-        std::stringstream ss(subStr);
-        if (ss >> currentNbr)
-        {
-            _stack.push_back(currentNbr);
-        }
-        else
-        {
-            std::cout << "Error: Invalid input" << std::endl;
-            return (false);
-        }
-        i += nextSpace;
+		// Pas d'espace au dernier nombre donc end of string
+		if (nextSpace == std::string::npos)
+		{
+			subStr = nbrStr.substr(i);
+			endOfString = true;
+		}
+		// Extrait la substr jusqu'à l'espace
+		subStr = nbrStr.substr(i, nextSpace - i);
+		std::stringstream ss(subStr);
+		if (ss >> currentNbr)
+		{
+			_stack.push_back(currentNbr);
+			std::cout << "Input: " << subStr << std::endl;
+		}
+		else
+		{
+			std::cout << "Error: Invalid input" << std::endl;
+			std::cout << "Input: " << subStr << std::endl;
+			return (false);
+		}
+		if (endOfString == true)
+			break ;
+
+		// Correspond au charactere suivant après le space
+        i = nextSpace + 1; 
     }
-    //printStack();
+
+	std::cout << "Before: " << nbrStr << std::endl;
     return (true);
 }
 
 std::vector<size_t> PmergeMe::jacobsthalOrder(size_t n)
 {
     std::vector<size_t> order;
+    if (n == 0) 
+		return (order);
+
     std::vector<size_t> jacob;
+    jacob.push_back(1); // J1
+    jacob.push_back(3); // J2 (on commence souvent à 3 pour Ford-Johnson)
 
-    jacob.push_back(0);
-    jacob.push_back(1);
-
+    // 1. Générer assez de nombres de Jacobsthal
     while (jacob.back() < n)
-        jacob.push_back(jacob[jacob.size() - 1] + 2 * jacob[jacob.size() - 2]);
-
-    size_t prev = 0;
-
-    for (size_t k = 2; k < jacob.size(); k++)
     {
-        size_t curr = std::min(jacob[k], n);
-        for (size_t i = curr; i > prev; i--)
-            order.push_back(i - 1);
-
-        prev = curr;
+        size_t next = jacob[jacob.size() - 1] + 2 * jacob[jacob.size() - 2];
+        jacob.push_back(next);
     }
 
-    // if any indices were skipped (happens when n is small) append them
-    // in increasing order so they will be inserted eventually.
-    for (size_t i = 0; i < n; i++)
+    size_t last_processed = 0;
+
+    // 2. Parcourir les paliers de Jacobsthal
+    for (size_t i = 0; i < jacob.size(); i++)
     {
-        if (std::find(order.begin(), order.end(), i) == order.end())
-            order.push_back(i);
+        size_t target = jacob[i];
+        if (target > n) 
+			target = n;
+
+        // On insère en décroissant de 'target' jusqu'à 'last_processed + 1'
+        for (size_t j = target; j > last_processed; j--)
+        {
+            order.push_back(j - 1); // -1 si tu travailles avec des index 0-based
+			//std::cout << "Order: " << j - 1 << std::endl;
+        }
+        
+        if (target == n) 
+			break ;
+        last_processed = target;
     }
 
     return (order);

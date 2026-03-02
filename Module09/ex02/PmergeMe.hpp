@@ -23,6 +23,7 @@ class PmergeMe
         bool postParsing();
         void printStack(std::vector<int> &stack);
 		void printStack();
+		void checkStack();
 
 		// Algo
 		std::vector<int> fordJohnson(std::vector<int> &array);
