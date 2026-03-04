@@ -10,6 +10,7 @@ PmergeMe::PmergeMe()// : _odd(0), _hasOdd(false)
 PmergeMe::PmergeMe(const PmergeMe &other)
 {
     _stack = other._stack;
+	_stackDeque = other._stackDeque;
 }
 
 PmergeMe &PmergeMe::operator=(const PmergeMe &other)
@@ -17,6 +18,7 @@ PmergeMe &PmergeMe::operator=(const PmergeMe &other)
     if (this->_stack != other._stack)
     {
         _stack = other._stack;
+		_stackDeque = other._stackDeque;
     }
 
     return (*this);
@@ -36,7 +38,21 @@ void PmergeMe::printStack(std::vector<int> &stack)
     
 }
 
-void PmergeMe::checkStack()
+void PmergeMe::checkStackDeq()
+{
+	for (size_t i = 0; i < _stackDeque.size() - 1; i++)
+	{
+		if (_stackDeque[i] > _stackDeque[i + 1])
+		{
+			std::cout << "Stack unsorted: \n" << "_stack[i]: " << _stackDeque[i] << "\n" << "_stack[i + 1]: " << _stackDeque[i + 1] << std::endl;
+			
+			return ;
+		}
+	}
+	std::cout << "Stack sorted" << std::endl;
+}
+
+void PmergeMe::checkStackVect()
 {
 	for (size_t i = 0; i < _stack.size() - 1; i++)
 	{
@@ -50,7 +66,19 @@ void PmergeMe::checkStack()
 	std::cout << "Stack sorted" << std::endl;
 }
 
-void PmergeMe::printStack()
+void PmergeMe::printStackDeq()
+{
+	std::cout << "After: ";
+    for (size_t i = 0; i < _stackDeque.size(); i++)
+    {
+        std::cout << _stackDeque[i] << " ";
+		if (i == _stackDeque.size() - 1)
+			std::cout << std::endl;
+    }
+    
+}
+
+void PmergeMe::printStackVect()
 {
 	std::cout << "After: ";
     for (size_t i = 0; i < _stack.size(); i++)
@@ -103,7 +131,7 @@ bool PmergeMe::parsing(std::string &nbrStr)
 		if (ss >> currentNbr)
 		{
 			_stack.push_back(currentNbr);
-			std::cout << "Input: " << subStr << std::endl;
+			//std::cout << "Input: " << subStr << std::endl;
 		}
 		else
 		{
@@ -118,21 +146,22 @@ bool PmergeMe::parsing(std::string &nbrStr)
         i = nextSpace + 1; 
     }
 
-	std::cout << "Before: " << nbrStr << std::endl;
+	std::cout << "Before: " << nbrStr << std::endl << std::endl;
     return (true);
 }
 
-std::vector<size_t> PmergeMe::jacobsthalOrder(size_t n)
+std::deque<size_t> PmergeMe::jacobsthalOrderDeq(size_t n)
 {
-    std::vector<size_t> order;
+    std::deque<size_t> order;
     if (n == 0) 
 		return (order);
 
-    std::vector<size_t> jacob;
-    jacob.push_back(1); // J1
-    jacob.push_back(3); // J2 (on commence souvent à 3 pour Ford-Johnson)
+    std::deque<int> jacob;
+	// "0" et "1" de la suite ne necessite pas d'optimisation donc on peut les skip et insérer "1" et "3" de la suite
+    jacob.push_back(1);
+    jacob.push_back(3);
 
-    // 1. Générer assez de nombres de Jacobsthal
+    // Generer les nombres
     while (jacob.back() < n)
     {
         size_t next = jacob[jacob.size() - 1] + 2 * jacob[jacob.size() - 2];
@@ -161,6 +190,98 @@ std::vector<size_t> PmergeMe::jacobsthalOrder(size_t n)
     }
 
     return (order);
+}
+
+std::vector<size_t> PmergeMe::jacobsthalOrder(size_t n)
+{
+    std::vector<size_t> order;
+    if (n == 0) 
+		return (order);
+
+    std::vector<size_t> jacob;
+	// "0" et "1" de la suite ne necessite pas d'optimisation donc on peut les skip et insérer "1" et "3" de la suite
+    jacob.push_back(1);
+    jacob.push_back(3);
+
+    // Generer les nombres
+    while (jacob.back() < n)
+    {
+        size_t next = jacob[jacob.size() - 1] + 2 * jacob[jacob.size() - 2];
+        jacob.push_back(next);
+    }
+
+    size_t last_processed = 0;
+
+    // 2. Parcourir les paliers de Jacobsthal
+    for (size_t i = 0; i < jacob.size(); i++)
+    {
+        size_t target = jacob[i];
+        if (target > n) 
+			target = n;
+
+        // On insère en décroissant de 'target' jusqu'à 'last_processed + 1'
+        for (size_t j = target; j > last_processed; j--)
+        {
+            order.push_back(j - 1); // -1 si tu travailles avec des index 0-based
+			//std::cout << "Order: " << j - 1 << std::endl;
+        }
+        
+        if (target == n) 
+			break ;
+        last_processed = target;
+    }
+
+    return (order);
+}
+
+std::deque<int> PmergeMe::fordJohnsonDeq(std::deque<int> &array)
+{
+    std::deque<int> processingStack;
+    std::deque<int> pendingStack;
+    std::deque<int> maxIndexes;
+    std::deque<Pair> pairs;
+    int odd;
+    bool hasOdd = false;
+
+	if (array.size() <= 1)
+		return (array);
+
+	// insertion des pairs de manière trié
+	for (size_t i = 0; i + 1 < array.size(); i += 2)
+	{
+		Pair p;
+
+		if (array[i] < array[i + 1])
+		{
+			p.min = array[i];
+			p.max = array[i + 1];
+		}
+		else
+		{
+			p.min = array[i + 1];
+			p.max = array[i];
+		}
+
+		pairs.push_back(p);
+	}
+
+	// si array impair stocker l'impair
+	if (array.size() % 2 != 0)
+	{
+		odd = array.back();
+		hasOdd = true;
+	}
+
+	for (size_t i = 0; i < pairs.size(); i++)
+	{
+		processingStack.push_back(pairs[i].max);
+		pendingStack.push_back(pairs[i].min);
+	}
+
+	processingStack = fordJohnsonDeq(processingStack);
+	jacobsthalInsertingDeq(processingStack, pendingStack, pairs, maxIndexes, odd, hasOdd);
+
+    return (processingStack);
 }
 
 std::vector<int> PmergeMe::fordJohnson(std::vector<int> &array)
@@ -213,6 +334,37 @@ std::vector<int> PmergeMe::fordJohnson(std::vector<int> &array)
     return (processingStack);
 }
 
+void PmergeMe::jacobsthalInsertingDeq(std::deque<int> &processingStack, std::deque<int> &pendingStack, std::deque<Pair> &pairs, std::deque<int> maxIndexes, int odd, bool hasOdd)
+{
+    std::deque<size_t> jacobOrder;
+
+    jacobOrder = jacobsthalOrderDeq(pendingStack.size());
+
+	for (size_t k = 0; k < jacobOrder.size(); k++)
+	{
+        size_t i = jacobOrder[k];
+        if (i >= pendingStack.size() || i >= pairs.size())
+            continue ;
+		int currentValue = pendingStack[i];
+
+		// retrouver la position du max associé
+		int maxValue = pairs[i].max;
+		//std::vector<int>::iterator maxPos = std::find(processingStack.begin(), processingStack.end(), maxValue);
+        //std::vector<int>::iterator maxPos = maxIndexes.begin() + maxIndexes[i];
+        std::deque<int>::iterator maxPos = std::lower_bound(processingStack.begin(), processingStack.end(), pairs[i].max);
+		std::deque<int>::iterator insertPos = std::lower_bound(processingStack.begin(), maxPos, currentValue);
+
+		processingStack.insert(insertPos, currentValue);
+	}
+
+	if (hasOdd)
+	{
+		std::deque<int>::iterator minPos = std::lower_bound(processingStack.begin(), processingStack.end(), odd);
+		processingStack.insert(minPos, odd);
+	}
+
+}
+
 void PmergeMe::jacobsthalInserting(std::vector<int> &processingStack, std::vector<int> &pendingStack, std::vector<Pair> &pairs, std::vector<int> maxIndexes, int odd, bool hasOdd)
 {
     std::vector<size_t> jacobOrder;
@@ -245,6 +397,12 @@ void PmergeMe::jacobsthalInserting(std::vector<int> &processingStack, std::vecto
 }
 
 //TODO: remplacer find() par un binary search et adapter le code en fonction
+
+void PmergeMe::sortingInsertingDeq()
+{
+	std::deque<int> result = fordJohnsonDeq(_stackDeque);
+	_stackDeque = result;
+}
 
 void PmergeMe::sortingInserting()
 {

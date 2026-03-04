@@ -25,8 +25,8 @@ std::string ToString(char *argv[])
 int main(int argc, char *argv[])
 {
     PmergeMe pme;
+	PmergeMe pmd;
     std::string nbrStr;
-	clock_t t_start = clock();
 
 
     if (argc < 3)
@@ -38,15 +38,36 @@ int main(int argc, char *argv[])
     nbrStr = ToString(argv);
     if (!pme.parsing(nbrStr))
         return (1);
+    //if (!pmd.parsing(nbrStr))
+        //return (1);
     //if (!pme.postParsing())
         //return (1);
+	
+	std::cout << "---- Using Vector<int> ----" <<std::endl;
     
-	pme.sortingInserting();
-	pme.printStack();
-	pme.checkStack();
+	clock_t t_start_v = clock();
 
-	clock_t t_end = clock();
-	double elapsed = static_cast<double>(t_end - t_start) / CLOCKS_PER_SEC;
-	std::cout << "Clock time passed: " << elapsed << std::endl;
+	pme.sortingInserting();
+	pme.printStackVect();
+	pme.checkStackVect();
+
+	clock_t t_end_v = clock();
+	double elapsed_v = static_cast<double>(t_end_v - t_start_v) / CLOCKS_PER_SEC;
+	std::cout << std::fixed;
+	std::cout << "Clock time passed: " << elapsed_v << std::endl << std::endl;
+
+	std::cout << "---- Using Deq<int> ----" <<std::endl;
+
+	clock_t t_start_d = clock();
+
+	pme.sortingInsertingDeq();
+	pme.printStackDeq();
+	//pme.checkStackDeq();
+
+	clock_t t_end_d = clock();
+	double elapsed_d = static_cast<double>(t_end_d - t_start_d) / CLOCKS_PER_SEC;
+	std::cout << std::fixed;
+	std::cout << "Clock time passed: " << elapsed_d << std::endl;
+
     return (0);
 }
