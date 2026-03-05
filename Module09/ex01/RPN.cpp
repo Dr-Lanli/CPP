@@ -198,7 +198,7 @@ bool RPN::executeRpn()
 		for ( ; !isSign(_rpnStr[i]); i++)
 		{
 			//std::cout << "stack to push: " << _rpnStr[i] << std::endl;
-			// Push les valeur en int au lieu d'ASCII par défaut
+			// Push les valeurs en int au lieu d'ASCII par défaut
 			_stack.push(_rpnStr[i] - '0');
 		}
 		if (isSign(_rpnStr[i]))

@@ -4,16 +4,16 @@
 
 std::string ToString(char *argv[])
 {
-    int len = 0;
+    size_t len = 0;
     std::string nbrStr;
 
     while (argv[len])
-        len++;          
+        len++;
 
     for (size_t i = 1; i < len; i++)
     {
         nbrStr.append(argv[i]);
-        if (i < len - 1)
+        if (i + 1 < len)
             nbrStr.append(" ");
     }
     
@@ -24,8 +24,8 @@ std::string ToString(char *argv[])
 
 int main(int argc, char *argv[])
 {
+    clock_t t_start_p = clock();
     PmergeMe pme;
-	PmergeMe pmd;
     std::string nbrStr;
 
 
@@ -37,9 +37,11 @@ int main(int argc, char *argv[])
     
     nbrStr = ToString(argv);
     if (!pme.parsing(nbrStr))
+    {
         return (1);
-    //if (!pmd.parsing(nbrStr))
-        //return (1);
+    }
+	clock_t t_end_p = clock();
+	double elapsed_p = static_cast<double>(t_end_p - t_start_p) / CLOCKS_PER_SEC;
     //if (!pme.postParsing())
         //return (1);
 	
@@ -54,20 +56,20 @@ int main(int argc, char *argv[])
 	clock_t t_end_v = clock();
 	double elapsed_v = static_cast<double>(t_end_v - t_start_v) / CLOCKS_PER_SEC;
 	std::cout << std::fixed;
-	std::cout << "Clock time passed: " << elapsed_v << std::endl << std::endl;
+	std::cout << "Clock time passed: " << elapsed_v << " second" << std::endl << std::endl;
 
-	std::cout << "---- Using Deq<int> ----" <<std::endl;
+	std::cout << "---- Using Deque<int> ----" <<std::endl;
 
 	clock_t t_start_d = clock();
 
 	pme.sortingInsertingDeq();
 	pme.printStackDeq();
-	//pme.checkStackDeq();
+	pme.checkStackDeq();
 
 	clock_t t_end_d = clock();
 	double elapsed_d = static_cast<double>(t_end_d - t_start_d) / CLOCKS_PER_SEC;
 	std::cout << std::fixed;
-	std::cout << "Clock time passed: " << elapsed_d << std::endl;
+	std::cout << "Clock time passed: " << elapsed_d << " second" << std::endl;
 
     return (0);
 }
