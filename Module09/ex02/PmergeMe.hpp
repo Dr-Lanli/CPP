@@ -32,7 +32,6 @@ class PmergeMe
 
 		// Algo
 		std::vector<int> fordJohnson(std::vector<int> &array);
-		//std::vector<int> fordJohnsonRec(const std::vector<int> &array);
 		std::vector<size_t> jacobsthalOrder(size_t n);
 		void jacobsthalInserting(std::vector<int> &processingStack, std::vector<int> &pendingStack, std::vector<Pair> &pairs, int odd, bool hasOdd);
 		void sortingInserting();

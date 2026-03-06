@@ -24,7 +24,6 @@ std::string ToString(char *argv[])
 
 int main(int argc, char *argv[])
 {
-    clock_t t_start_p = clock();
     PmergeMe pme;
     std::string nbrStr;
 
@@ -40,10 +39,6 @@ int main(int argc, char *argv[])
     {
         return (1);
     }
-	clock_t t_end_p = clock();
-	double elapsed_p = static_cast<double>(t_end_p - t_start_p) / CLOCKS_PER_SEC;
-    //if (!pme.postParsing())
-        //return (1);
 	
 	std::cout << "---- Using Vector<int> ----" <<std::endl;
     
