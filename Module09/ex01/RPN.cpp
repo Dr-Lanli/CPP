@@ -185,7 +185,9 @@ bool RPN::switchOnSign(char sign, int a, int b)
 		_res = a / b;
 		return (true);
 	default:
-		return (true);
+		std::cout << "Error: Not an RPN expression" << std::endl;
+		_res = 0;
+		return (false);
 	}
 
 	return (true);
@@ -201,24 +203,35 @@ bool RPN::executeRpn()
 			// Push les valeurs en int au lieu d'ASCII par défaut
 			_stack.push(_rpnStr[i] - '0');
 		}
+		
 		if (isSign(_rpnStr[i]))
 		{
 			int a = 0;
 			int b = 0;
-			
+
+			if (_stack.size() < 2)
+            {
+                std::cout << "Error: Not an RPN expression" << std::endl;
+                return (false);
+            }
 			b = _stack.top();
 			//std::cout << "stack elmt b: " << b << std::endl;
 			_stack.pop();
 			a = _stack.top();
 			//std::cout << "stack elmt a: " << a << std::endl;
 			_stack.pop();
-	
+
 			if (!switchOnSign(_rpnStr[i], a, b))
 				return (false);
 
 			_stack.push(_res);
 		}
 	}
+	if (_stack.size() != 1)
+	{
+        std::cout << "Error: Not an RPN expression" << std::endl;
+        return (false);
+    }
 	std::cout << _res << std::endl;
 	
 	return (true);
