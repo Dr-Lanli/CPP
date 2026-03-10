@@ -19,6 +19,8 @@ class PmergeMe
         PmergeMe(const PmergeMe &other);
         PmergeMe &operator=(const PmergeMe &other);
         ~PmergeMe();
+		size_t getStackSizeVect();
+		size_t getStackSizeDeq();
 
 		// Parsing
         bool parsing(std::string &nbrStr);

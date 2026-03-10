@@ -1,6 +1,7 @@
 #include "PmergeMe.hpp"
 
 #include <ctime>
+#include <iomanip>
 
 std::string ToString(char *argv[])
 {
@@ -30,7 +31,7 @@ int main(int argc, char *argv[])
 
     if (argc < 3)
     {
-        std::cout << "Error: Not enough arguments" << std::endl;
+        std::cerr << "Error: Not enough arguments" << std::endl;
         return (1);
     }
     
@@ -40,31 +41,24 @@ int main(int argc, char *argv[])
         return (1);
     }
 	
-	std::cout << "---- Using Vector<int> ----" <<std::endl;
-    
 	clock_t t_start_v = clock();
 
 	pme.sortingInserting();
 	pme.printStackVect();
-	pme.checkStackVect();
 
 	clock_t t_end_v = clock();
-	double elapsed_v = static_cast<double>(t_end_v - t_start_v) / CLOCKS_PER_SEC;
-	std::cout << std::fixed;
-	std::cout << "Clock time passed: " << elapsed_v << " second" << std::endl << std::endl;
-
-	std::cout << "---- Using Deque<int> ----" <<std::endl;
+	double elapsed_v = static_cast<double>(t_end_v - t_start_v) / CLOCKS_PER_SEC * 1000000;
+	std::cout << std::fixed << std::setprecision(5);
+	std::cout << "Time to process a range of " << pme.getStackSizeVect() << " elements with std::vector : " << elapsed_v << " us" << std::endl;
 
 	clock_t t_start_d = clock();
 
 	pme.sortingInsertingDeq();
-	pme.printStackDeq();
-	pme.checkStackDeq();
 
 	clock_t t_end_d = clock();
-	double elapsed_d = static_cast<double>(t_end_d - t_start_d) / CLOCKS_PER_SEC;
-	std::cout << std::fixed;
-	std::cout << "Clock time passed: " << elapsed_d << " second" << std::endl;
+	double elapsed_d = static_cast<double>(t_end_d - t_start_d) / CLOCKS_PER_SEC * 1000000;
+	std::cout << std::fixed << std::setprecision(5);
+	std::cout << "Time to process a range of " << pme.getStackSizeDeq() << " elements with std::deque : " << elapsed_d << " us" << std::endl;
 
     return (0);
 }

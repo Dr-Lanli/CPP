@@ -44,7 +44,7 @@ void PmergeMe::checkStackDeq()
 	{
 		if (_stackDeque[i] > _stackDeque[i + 1])
 		{
-			std::cout << "Stack unsorted: \n" << "_stack[i]: " << _stackDeque[i] << "\n" << "_stack[i + 1]: " << _stackDeque[i + 1] << std::endl;
+			std::cerr << "Stack unsorted: \n" << "_stack[i]: " << _stackDeque[i] << "\n" << "_stack[i + 1]: " << _stackDeque[i + 1] << std::endl;
 			
 			return ;
 		}
@@ -58,7 +58,7 @@ void PmergeMe::checkStackVect()
 	{
 		if (_stack[i] > _stack[i + 1])
 		{
-			std::cout << "Stack unsorted: \n" << "_stack[i]: " << _stack[i] << "\n" << "_stack[i + 1]: " << _stack[i + 1] << std::endl;
+			std::cerr << "Stack unsorted: \n" << "_stack[i]: " << _stack[i] << "\n" << "_stack[i + 1]: " << _stack[i + 1] << std::endl;
 			
 			return ;
 		}
@@ -99,12 +99,22 @@ bool PmergeMe::postParsing()
 
         if (prevNbr == _stack[i])
         {
-            std::cout << "Error: Duplicate numbers: " << prevNbr << " " << _stack[i] << std::endl;
+            std::cerr << "Error: Duplicate numbers: " << prevNbr << " " << _stack[i] << std::endl;
             return (false);
         }
     }
 
     return (true);
+}
+
+size_t PmergeMe::getStackSizeVect()
+{
+	return (_stack.size());
+}
+
+size_t PmergeMe::getStackSizeDeq()
+{
+	return (_stackDeque.size());
 }
 
 bool PmergeMe::parsing(std::string &nbrStr)
@@ -130,14 +140,18 @@ bool PmergeMe::parsing(std::string &nbrStr)
 		std::stringstream ss(subStr);
 		if (ss >> currentNbr)
 		{
+			if (currentNbr <= 0 || !ss.eof())
+			{
+				std::cerr << "Error" << std::endl;
+				return (false);
+			}
 			_stack.push_back(currentNbr);
 			_stackDeque.push_back(currentNbr);
 			//std::cout << "Input: " << subStr << std::endl;
 		}
 		else
 		{
-			std::cout << "Error: Invalid input" << std::endl;
-			std::cout << "Input: " << subStr << std::endl;
+			std::cerr << "Error" << std::endl;
 			return (false);
 		}
 		if (endOfString == true)
