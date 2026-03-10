@@ -51,6 +51,9 @@ void RPN::read_stack()
 
 static bool isSign(char c)
 {
+	if (!c)
+		return (false);
+
 	if (c == '+' || c == '-' || c == '*' || c == '/')
 		return (true);
 	
@@ -105,6 +108,9 @@ static bool validatingSign(std::string &str)
 	int nbrSign = 0;
 	int nbrInt = 0;
 
+	if (!&str || !str[0])
+		return (false);
+
 	if (isSign(str[0]))
 		return (false);
 
@@ -138,9 +144,9 @@ static bool validatingNbr(std::string str)
 
 bool RPN::parseRpn()
 {
-	if (_rpnStr.empty())
+	if (_rpnStr.empty() || _rpnStr.size() < 2)
 	{
-		std::cout << "Error: RPN is empty" << std::endl;
+		std::cout << "Error: RPN is invalid" << std::endl;
 		return (false);
 	}
 	if (!validatingNbr(_rpnStr))
@@ -190,44 +196,41 @@ bool RPN::switchOnSign(char sign, int a, int b)
 		return (false);
 	}
 
-	return (true);
+	return (false);
 }
 
 bool RPN::executeRpn()
 {
+	bool flag = false;
+	
 	for (size_t i = 0; i < _rpnStr.size(); i++)
-	{
-		for ( ; !isSign(_rpnStr[i]); i++)
-		{
-			//std::cout << "stack to push: " << _rpnStr[i] << std::endl;
-			// Push les valeurs en int au lieu d'ASCII par défaut
-			_stack.push(_rpnStr[i] - '0');
-		}
-		
-		if (isSign(_rpnStr[i]))
-		{
-			int a = 0;
-			int b = 0;
-
-			if (_stack.size() < 2)
+    {
+        if (isdigit(_rpnStr[i]))
+        {
+            _stack.push(_rpnStr[i] - '0');
+        }
+        else if (isSign(_rpnStr[i]))
+        {
+			flag = true;
+            if (_stack.size() < 2)
             {
                 std::cout << "Error: Not an RPN expression" << std::endl;
                 return (false);
             }
-			b = _stack.top();
-			//std::cout << "stack elmt b: " << b << std::endl;
-			_stack.pop();
-			a = _stack.top();
-			//std::cout << "stack elmt a: " << a << std::endl;
-			_stack.pop();
+
+            int b = _stack.top();
+            _stack.pop();
+            int a = _stack.top();
+            _stack.pop();
 
 			if (!switchOnSign(_rpnStr[i], a, b))
 				return (false);
 
 			_stack.push(_res);
-		}
-	}
-	if (_stack.size() != 1)
+        }
+    }
+
+	if (_stack.size() != 1 || !flag)
 	{
         std::cout << "Error: Not an RPN expression" << std::endl;
         return (false);
